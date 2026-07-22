@@ -1,5 +1,9 @@
 # Gengo Duet
 
+<p align="center">
+  <img src="gengo-duet-interface.png" alt="Gengo Duet Japanese learning interface with Tsuki-sensei and Selene-sensei" width="900">
+</p>
+
 ```text
  /\_/\   /\_/\
 ( ^.^ ) ( o.o )   GENGO DUET
@@ -75,7 +79,8 @@ Translations are maintained as a durable source library and exported into
 - Concept, design, and development: Cesar Borgenkrans / SparkleSnap.
 - Teaching mascots: Tsuki-sensei and Selene-sensei.
 - Optional local voice add-on: VoiceGen Oui.
-- AI pair programming: Claude Opus 4.8-senpai and OpenAI Codex.
+- Made with a little AI pair-programming help from Claude Opus 4.8-senpai and
+  OpenAI Codex — thank you, senpais! 🌙✨
 
 ## License
 
@@ -85,3 +90,8 @@ SparkleSnap branding, character designs, official artwork, sprites, logotypes,
 and creative copy are not included in the code license. Friendly
 non-commercial fan works are welcome with credit; see
 [ASSET_LICENSE.md](ASSET_LICENSE.md) for the boundary.
+
+## Support me
+
+If you would like to support my tiny tools and future experiments,
+[follow SparkleSnap on Pinterest](https://se.pinterest.com/sparklesnapper/) 🏡✨
