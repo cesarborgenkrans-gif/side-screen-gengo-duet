@@ -178,6 +178,7 @@ textarea, input { cursor: url('assets/cursor-active.svg') 8 8, text; }
   min-width: 0;
   flex-wrap: wrap;
   justify-content: flex-end;
+  padding-right: clamp(118px, 12vw, 170px);
 }
 
 button {
@@ -202,6 +203,23 @@ button {
 }
 .primary:hover { box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 30%, transparent); transform: translateY(-1px); }
 button:disabled { opacity: .55; cursor: wait; }
+
+.close-app {
+  position: fixed;
+  top: clamp(10px, 1.8vmin, 26px);
+  right: clamp(10px, 1.8vmin, 26px);
+  z-index: 90;
+  min-width: 112px;
+  min-height: 48px;
+  padding: 10px 15px;
+  border: 2px solid color-mix(in srgb, var(--error) 78%, var(--border));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--error) 16%, var(--surface2));
+  color: var(--text);
+  font: 700 clamp(1rem, 1.35vw, 1.3rem)/1 var(--ui);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .18);
+}
+.close-app:hover { background: color-mix(in srgb, var(--error) 30%, var(--surface2)); transform: translateY(-1px); }
 
 .themebar {
   display: flex;
@@ -279,24 +297,65 @@ button:disabled { opacity: .55; cursor: wait; }
 .filebanner[hidden], .settings[hidden] { display: none; }
 
 .settings {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  flex-shrink: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 14px;
+  place-items: center;
+  padding: 12px;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  backdrop-filter: blur(8px);
 }
-.settings label {
+.settings-card {
+  width: min(1100px, 100%);
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--surface2);
+  border: 2px solid var(--border-hot);
+  border-radius: calc(var(--radius) * 2);
+  padding: clamp(20px, 3vmin, 38px);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, .42);
+}
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+  padding-right: 150px;
+}
+.settings-head h2 {
+  color: var(--text);
+  font: 800 clamp(1.75rem, 3vw, 2.7rem)/1.15 var(--ui);
+  letter-spacing: .02em;
+}
+.settings-close {
+  flex: 0 0 auto;
+  min-height: 76px;
+  padding: 14px 20px;
+  border: 2px solid var(--border-hot);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: 700 clamp(1.7rem, 2vw, 2rem)/1 var(--ui);
+}
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  min-width: 0;
+}
+.settings-grid > label {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 9px;
   font-family: var(--mono);
-  font-size: .85rem;
+  font-size: clamp(1.7rem, 2.25vw, 2rem);
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: .04em;
+  min-width: 0;
 }
 .settings input, .settings select, .select-label select {
   background: rgba(0,0,0,.24);
@@ -304,8 +363,11 @@ button:disabled { opacity: .55; cursor: wait; }
   border-radius: var(--radius);
   color: var(--text);
   font-family: var(--mono);
-  font-size: 1rem;
-  padding: 9px 10px;
+  font-size: clamp(2rem, 2.35vw, 2.25rem);
+  min-height: 76px;
+  padding: 17px 20px;
+  width: 100%;
+  max-width: 100%;
 }
 body[data-theme="ink"] .settings input,
 body[data-theme="ink"] .settings select,
@@ -319,20 +381,46 @@ body[data-theme="ink"] .src-input {
   box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 .settings .row-actions {
-  grid-column: 1 / -1;
   display: flex;
   align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 26px;
+}
+.settings .row-actions .ghost,
+.settings .row-actions .primary {
+  min-height: 76px;
+  padding: 16px 22px;
+  font-size: clamp(2rem, 2.2vw, 2.25rem);
 }
 .settings label.chk {
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: 18px;
   text-transform: none;
-  font-size: 1rem;
+  font-size: clamp(2rem, 2.25vw, 2.25rem);
   color: var(--text);
 }
-.settings label.chk input { width: auto; transform: scale(1.25); accent-color: var(--accent); }
+.settings label.chk input { width: auto; min-height: 0; transform: scale(2); accent-color: var(--accent); margin: 12px; }
+.hardware-safety {
+  display: grid;
+  gap: 8px;
+  padding: 18px 20px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--muted);
+  font: 600 clamp(1.7rem, 1.9vw, 2rem)/1.4 var(--body);
+}
+.hardware-safety strong { color: var(--text); font-family: var(--ui); }
+.hardware-safety.safe { border-color: color-mix(in srgb, var(--selene) 62%, transparent); }
+.hardware-safety.blocked { border-color: color-mix(in srgb, var(--error) 72%, transparent); color: var(--error); }
+.hardware-safety.checking { border-color: color-mix(in srgb, var(--warn) 55%, transparent); }
+.settings .voice-credit,
+.settings .privacy-note {
+  font-size: clamp(1.7rem, 1.9vw, 2rem);
+  line-height: 1.45;
+}
 .muted { color: var(--dim); font-family: var(--mono); font-size: .95rem; }
 
 .stage {
@@ -661,13 +749,18 @@ body[data-theme="ink"] .src-input {
   .topbar { align-items: flex-start; padding-bottom: 7px; gap: 7px; }
   .brand { font-size: .92rem; }
   .brand span { display: block; font-size: .82em; }
-  .right { justify-content: flex-start; gap: 7px; }
+  .right { justify-content: flex-start; gap: 7px; padding-right: 108px; }
   .themebar { gap: 4px; padding: 3px; }
   .theme-swatch { width: 27px; height: 27px; }
   .ghost { padding: 8px 11px; }
   .conn, .vram, .lang-select { padding: 6px 9px; }
   .filebanner { display: none; }
-  .settings { grid-template-columns: 1fr; }
+  .settings { padding: 6px; }
+  .settings-card { max-height: calc(100vh - 12px); padding: 18px 14px 24px; }
+  .settings-head { align-items: flex-start; margin-bottom: 18px; padding-right: 110px; }
+  .settings-close span { display: none; }
+  .settings-close { min-width: 58px; padding: 12px; }
+  .close-app { min-width: 104px; min-height: 44px; }
   .modes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mode { padding: 9px 8px; }
   .run-row { flex-wrap: wrap; }

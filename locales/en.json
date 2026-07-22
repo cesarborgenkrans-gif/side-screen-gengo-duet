@@ -4,7 +4,7 @@
   "autonym": "English",
   "displayName": "English",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "settings",
     "provider": "LLM provider",
@@ -71,6 +71,27 @@
     "copied": "Copied ✓",
     "voice_credit": "Optional local TTS add-on:",
     "privacy_local": "Local provider: your lesson material stays on this computer.",
-    "privacy_cloud": "Cloud provider: submitted lesson material is sent to the selected service."
+    "privacy_cloud": "Cloud provider: submitted lesson material is sent to the selected service.",
+    "close": "Close",
+    "close_title": "Close Gengo Duet",
+    "settings_title": "Model and voice settings",
+    "settings_close": "Close settings",
+    "model_choose": "Choose a downloaded model",
+    "hardware_title": "Computer safety check",
+    "hardware_checking": "Checking VRAM and RAM...",
+    "hardware_cloud": "A cloud provider does not load a model on this computer.",
+    "hardware_unknown": "Memory could not be measured. New model loading is locked for safety.",
+    "hardware_ready": "{gpu}: {vram} GiB VRAM free · {ram} GiB RAM free.",
+    "model_required": "Choose a downloaded model first. Gengo Duet never chooses one automatically.",
+    "model_loaded_external": "{model} is already loaded in LM Studio.",
+    "model_fit_safe": "{model} passes the safety limit: estimate {need} GiB; safe headroom {available} GiB.",
+    "model_fit_unknown": "Load blocked: Gengo Duet could not verify the memory needed by {model}.",
+    "model_fit_blocked": "Blocked for safety: {model} estimate {need} GiB; safe headroom {available} GiB.",
+    "model_status_loaded": "loaded",
+    "model_status_safe": "safe to load",
+    "model_status_blocked": "locked for safety",
+    "refresh_models": "Refresh models",
+    "model_not_loaded": "{selected} is not ready. Open settings and use the load button first.",
+    "catalog_unavailable": "Gengo Duet could not read LM Studio's model list. Start its server and try again."
   }
 }

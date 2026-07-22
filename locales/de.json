@@ -4,7 +4,7 @@
   "autonym": "Deutsch",
   "displayName": "German",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "Einstellungen",
     "provider": "LLM-Anbieter",
@@ -71,6 +71,27 @@
     "copied": "Kopiert ✓",
     "voice_credit": "Optionales lokales TTS-Add-on:",
     "privacy_local": "Lokaler Anbieter: Dein Unterrichtsmaterial bleibt auf diesem Computer.",
-    "privacy_cloud": "Cloud-Anbieter: Übermitteltes Unterrichtsmaterial wird an den ausgewählten Dienst gesendet."
+    "privacy_cloud": "Cloud-Anbieter: Übermitteltes Unterrichtsmaterial wird an den ausgewählten Dienst gesendet.",
+    "close": "Schließen",
+    "close_title": "Gengo Duet schließen",
+    "settings_title": "Modell- und Spracheinstellungen",
+    "settings_close": "Einstellungen schließen",
+    "model_choose": "Heruntergeladenes Modell auswählen",
+    "hardware_title": "Sicherheitsprüfung des Computers",
+    "hardware_checking": "VRAM und RAM werden geprüft...",
+    "hardware_cloud": "Ein Cloud-Anbieter lädt kein Modell auf diesem Computer.",
+    "hardware_unknown": "Der Speicher konnte nicht gemessen werden. Das Laden neuer Modelle ist aus Sicherheitsgründen gesperrt.",
+    "hardware_ready": "{gpu}: {vram} GiB VRAM frei · {ram} GiB RAM frei.",
+    "model_required": "Wähle zuerst ein heruntergeladenes Modell. Gengo Duet wählt niemals automatisch eines aus.",
+    "model_loaded_external": "{model} ist bereits in LM Studio geladen.",
+    "model_fit_safe": "{model} liegt innerhalb der Sicherheitsgrenze: etwa {need} GiB erforderlich; {available} GiB sicher verfügbar.",
+    "model_fit_unknown": "Laden blockiert: Gengo Duet konnte den Speicherbedarf von {model} nicht überprüfen.",
+    "model_fit_blocked": "Aus Sicherheitsgründen blockiert: {model} benötigt möglicherweise etwa {need} GiB, aber nur {available} GiB sind sicher verfügbar.",
+    "model_status_loaded": "geladen",
+    "model_status_safe": "sicher ladbar",
+    "model_status_blocked": "Sicherheitssperre",
+    "refresh_models": "Modelle aktualisieren",
+    "model_not_loaded": "{selected} ist nicht geladen. Öffne die Einstellungen und verwende zuerst Modell laden.",
+    "catalog_unavailable": "Gengo Duet konnte die Modellliste von LM Studio nicht lesen. Starte den Server und versuche es erneut."
   }
 }

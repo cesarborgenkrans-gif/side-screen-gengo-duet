@@ -4,7 +4,7 @@
   "autonym": "Ελληνικά",
   "displayName": "Greek",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "ρυθμίσεις",
     "provider": "Πάροχος LLM",
@@ -71,6 +71,27 @@
     "copied": "Αντιγράφηκε ✓",
     "voice_credit": "Προαιρετικό τοπικό πρόσθετο TTS:",
     "privacy_local": "Τοπικός πάροχος: το υλικό του μαθήματος παραμένει σε αυτόν τον υπολογιστή.",
-    "privacy_cloud": "Πάροχος cloud: το υποβληθέν υλικό του μαθήματος αποστέλλεται στην επιλεγμένη υπηρεσία."
+    "privacy_cloud": "Πάροχος cloud: το υποβληθέν υλικό του μαθήματος αποστέλλεται στην επιλεγμένη υπηρεσία.",
+    "close": "Κλείσιμο",
+    "close_title": "Κλείσιμο του Gengo Duet",
+    "settings_title": "Ρυθμίσεις μοντέλου και φωνής",
+    "settings_close": "Κλείσιμο ρυθμίσεων",
+    "model_choose": "Επιλέξτε ένα ληφθέν μοντέλο",
+    "hardware_title": "Έλεγχος ασφάλειας υπολογιστή",
+    "hardware_checking": "Έλεγχος VRAM και RAM...",
+    "hardware_cloud": "Ένας πάροχος cloud δεν φορτώνει μοντέλο σε αυτόν τον υπολογιστή.",
+    "hardware_unknown": "Δεν ήταν δυνατή η μέτρηση της μνήμης. Η φόρτωση νέων μοντέλων κλειδώθηκε για ασφάλεια.",
+    "hardware_ready": "{gpu}: {vram} GiB ελεύθερη VRAM · {ram} GiB ελεύθερη RAM.",
+    "model_required": "Επιλέξτε πρώτα ένα ληφθέν μοντέλο. Το Gengo Duet δεν επιλέγει ποτέ μοντέλο αυτόματα.",
+    "model_loaded_external": "Το {model} είναι ήδη φορτωμένο στο LM Studio.",
+    "model_fit_safe": "Το {model} πληροί το όριο ασφαλείας: χρειάζεται περίπου {need} GiB· {available} GiB είναι διαθέσιμα με ασφάλεια.",
+    "model_fit_unknown": "Η φόρτωση αποκλείστηκε: το Gengo Duet δεν μπόρεσε να επαληθεύσει τη μνήμη που χρειάζεται το {model}.",
+    "model_fit_blocked": "Αποκλείστηκε για ασφάλεια: το {model} μπορεί να χρειάζεται περίπου {need} GiB, αλλά μόνο {available} GiB είναι διαθέσιμα με ασφάλεια.",
+    "model_status_loaded": "φορτωμένο",
+    "model_status_safe": "ασφαλές για φόρτωση",
+    "model_status_blocked": "κλειδωμένο για ασφάλεια",
+    "refresh_models": "Ανανέωση μοντέλων",
+    "model_not_loaded": "Το {selected} δεν είναι φορτωμένο. Ανοίξτε τις ρυθμίσεις και χρησιμοποιήστε πρώτα τη Φόρτωση μοντέλου.",
+    "catalog_unavailable": "Το Gengo Duet δεν μπόρεσε να διαβάσει τη λίστα μοντέλων του LM Studio. Εκκινήστε τον διακομιστή του και δοκιμάστε ξανά."
   }
 }

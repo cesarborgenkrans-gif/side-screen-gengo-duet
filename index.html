@@ -25,34 +25,53 @@
         <span id="vram" class="vram off" title="">VRAM -</span>
         <span id="conn" class="conn checking" title="">● checking...</span>
         <button id="screen-toggle" class="ghost window-control" data-i18n-title="screen_toggle_title" title="Move to main screen">▣ <span id="screen-toggle-label">main screen</span></button>
-        <button id="gear" class="ghost" title="LLM and voice settings">⚙ <span data-i18n="settings">settings</span></button>
+        <button id="gear" class="ghost" data-i18n-title="settings_title" title="Model and voice settings">⚙ <span data-i18n="settings">settings</span></button>
+        <button id="btn-close" class="close-app" type="button" data-i18n-title="close_title" title="Close Gengo Duet">✕ <span data-i18n="close">Close</span></button>
       </div>
     </header>
 
     <div id="filebanner" class="filebanner" hidden></div>
 
-    <section id="settings" class="settings" hidden>
-      <label><span data-i18n="provider">LLM provider</span>
-        <select id="cfg-provider">
-          <option value="lmstudio">LM Studio (local)</option>
-          <option value="ollama">Ollama (local)</option>
-          <option value="openrouter">OpenRouter (cloud)</option>
-          <option value="custom">Custom</option>
-        </select>
-      </label>
-      <label><span data-i18n="lmurl">LLM Base URL</span><input id="cfg-url" type="text" placeholder="http://localhost:1234/v1"></label>
-      <label><span data-i18n="model">Model</span><input id="cfg-model" type="text" placeholder="loaded local model"></label>
-      <label><span data-i18n="temp">Temperature</span><input id="cfg-temp" type="number" min="0" max="2" step="0.1" value="0.55"></label>
-      <label><span data-i18n="apikey">API Key</span><input id="cfg-key" type="text" placeholder="lm-studio"></label>
-      <label><span data-i18n="voiceurl">Voice server URL</span><input id="cfg-voice-url" type="text" placeholder="http://localhost:3113"></label>
-      <label class="chk"><input id="cfg-voice-on" type="checkbox"> <span data-i18n="voiceon">Voice output</span></label>
-      <p class="voice-credit"><span data-i18n="voice_credit">Optional local TTS add-on:</span> <a class="credit-link" href="https://github.com/cesarborgenkrans-gif/VoiceGen-Oui-ROCm-VoxCPM2" data-url="https://github.com/cesarborgenkrans-gif/VoiceGen-Oui-ROCm-VoxCPM2" target="_blank" rel="noreferrer">cesarborgenkrans-gif/VoiceGen-Oui-ROCm-VoxCPM2</a>.</p>
-      <label class="chk"><input id="cfg-always-on-top" type="checkbox"> <span data-i18n="always_on_top">Keep window on top</span></label>
-      <p id="privacy-note" class="privacy-note" aria-live="polite"></p>
-      <div class="row-actions">
-        <button id="btn-loadmodel" class="ghost" data-i18n-title="loadmodel_title" title="Load model in LM Studio">⇣ <span data-i18n="loadmodel">Load model</span></button>
-        <button id="cfg-save" class="primary" data-i18n="save">Save &amp; test</button>
-        <span id="cfg-status" class="muted"></span>
+    <section id="settings" class="settings" role="dialog" aria-modal="true" aria-labelledby="settings-heading" hidden>
+      <div class="settings-card">
+        <header class="settings-head">
+          <h2 id="settings-heading" data-i18n="settings_title">Model and voice settings</h2>
+          <button id="btn-settings-close" class="settings-close" type="button" data-i18n-title="settings_close" title="Close settings">✕ <span data-i18n="settings_close">Close settings</span></button>
+        </header>
+        <div class="settings-grid">
+          <label><span data-i18n="provider">LLM provider</span>
+            <select id="cfg-provider">
+              <option value="lmstudio">LM Studio (local)</option>
+              <option value="ollama">Ollama (local)</option>
+              <option value="openrouter">OpenRouter (cloud)</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+          <label><span data-i18n="lmurl">LLM Base URL</span><input id="cfg-url" type="text" placeholder="http://localhost:1234/v1"></label>
+          <label class="model-field"><span data-i18n="model">Model</span>
+            <select id="cfg-model-local" aria-describedby="hardware-safety">
+              <option value="" data-i18n="model_choose">Choose a downloaded model</option>
+            </select>
+            <input id="cfg-model" type="text" placeholder="model name" hidden>
+          </label>
+          <label><span data-i18n="temp">Temperature</span><input id="cfg-temp" type="number" min="0" max="2" step="0.1" value="0.55"></label>
+          <label><span data-i18n="apikey">API Key</span><input id="cfg-key" type="text" placeholder="lm-studio"></label>
+          <label><span data-i18n="voiceurl">Voice server URL</span><input id="cfg-voice-url" type="text" placeholder="http://localhost:3113"></label>
+          <div id="hardware-safety" class="hardware-safety checking" role="status" aria-live="polite">
+            <strong data-i18n="hardware_title">Computer safety check</strong>
+            <span id="hardware-summary" data-i18n="hardware_checking">Checking VRAM and RAM...</span>
+          </div>
+          <label class="chk"><input id="cfg-voice-on" type="checkbox"> <span data-i18n="voiceon">Voice output</span></label>
+          <p class="voice-credit"><span data-i18n="voice_credit">Optional local TTS add-on:</span> <a class="credit-link" href="https://github.com/cesarborgenkrans-gif/VoiceGen-Oui-ROCm-VoxCPM2" data-url="https://github.com/cesarborgenkrans-gif/VoiceGen-Oui-ROCm-VoxCPM2" target="_blank" rel="noreferrer">cesarborgenkrans-gif/VoiceGen-Oui-ROCm-VoxCPM2</a>.</p>
+          <label class="chk"><input id="cfg-always-on-top" type="checkbox"> <span data-i18n="always_on_top">Keep window on top</span></label>
+          <p id="privacy-note" class="privacy-note" aria-live="polite"></p>
+        </div>
+        <div class="row-actions">
+          <button id="btn-refresh-models" class="ghost" type="button">↻ <span data-i18n="refresh_models">Refresh models</span></button>
+          <button id="btn-loadmodel" class="ghost" data-i18n-title="loadmodel_title" title="Load selected model in LM Studio">⇣ <span data-i18n="loadmodel">Load model</span></button>
+          <button id="cfg-save" class="primary" data-i18n="save">Save &amp; test</button>
+          <span id="cfg-status" class="muted"></span>
+        </div>
       </div>
     </section>
 

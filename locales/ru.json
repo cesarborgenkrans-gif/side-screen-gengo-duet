@@ -4,7 +4,7 @@
   "autonym": "Русский",
   "displayName": "Russian",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "настройки",
     "provider": "Провайдер LLM",
@@ -71,6 +71,27 @@
     "copied": "Скопировано ✓",
     "voice_credit": "Дополнительный локальный модуль TTS:",
     "privacy_local": "Локальный провайдер: материалы урока остаются на этом компьютере.",
-    "privacy_cloud": "Облачный провайдер: отправленные материалы урока передаются выбранному сервису."
+    "privacy_cloud": "Облачный провайдер: отправленные материалы урока передаются выбранному сервису.",
+    "close": "Закрыть",
+    "close_title": "Закрыть Gengo Duet",
+    "settings_title": "Настройки модели и голоса",
+    "settings_close": "Закрыть настройки",
+    "model_choose": "Выберите загруженную модель",
+    "hardware_title": "Проверка безопасности компьютера",
+    "hardware_checking": "Проверка VRAM и RAM...",
+    "hardware_cloud": "Облачный провайдер не загружает модель на этот компьютер.",
+    "hardware_unknown": "Не удалось измерить память. Загрузка новых моделей заблокирована для безопасности.",
+    "hardware_ready": "{gpu}: свободно {vram} GiB VRAM · свободно {ram} GiB RAM.",
+    "model_required": "Сначала выберите загруженную модель. Gengo Duet никогда не выбирает модель автоматически.",
+    "model_loaded_external": "{model} уже загружена в LM Studio.",
+    "model_fit_safe": "{model} укладывается в безопасный предел: требуется около {need} GiB; безопасно доступно {available} GiB.",
+    "model_fit_unknown": "Загрузка заблокирована: Gengo Duet не смог проверить, сколько памяти требуется модели {model}.",
+    "model_fit_blocked": "Заблокировано для безопасности: модели {model} может потребоваться около {need} GiB, но безопасно доступно только {available} GiB.",
+    "model_status_loaded": "загружена",
+    "model_status_safe": "безопасна для загрузки",
+    "model_status_blocked": "заблокирована для безопасности",
+    "refresh_models": "Обновить модели",
+    "model_not_loaded": "{selected} не загружена. Откройте настройки и сначала используйте Загрузить модель.",
+    "catalog_unavailable": "Gengo Duet не смог прочитать список моделей LM Studio. Запустите сервер и повторите попытку."
   }
 }

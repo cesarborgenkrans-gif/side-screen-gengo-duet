@@ -4,7 +4,7 @@
   "autonym": "日本語",
   "displayName": "Japanese",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "設定",
     "provider": "LLMプロバイダー",
@@ -71,6 +71,27 @@
     "copied": "コピーしました ✓",
     "voice_credit": "ローカルTTS用の任意アドオン:",
     "privacy_local": "ローカルプロバイダー: レッスン内容はこのコンピューターに残ります。",
-    "privacy_cloud": "クラウドプロバイダー: 送信したレッスン内容は選択したサービスに送られます。"
+    "privacy_cloud": "クラウドプロバイダー: 送信したレッスン内容は選択したサービスに送られます。",
+    "close": "閉じる",
+    "close_title": "Gengo Duetを閉じる",
+    "settings_title": "モデルと音声の設定",
+    "settings_close": "設定を閉じる",
+    "model_choose": "ダウンロード済みモデルを選択",
+    "hardware_title": "パソコンの安全確認",
+    "hardware_checking": "VRAMとRAMを確認中...",
+    "hardware_cloud": "クラウドプロバイダーは、このパソコンにモデルを読み込みません。",
+    "hardware_unknown": "メモリを測定できませんでした。安全のため、新しいモデルの読み込みはロックされています。",
+    "hardware_ready": "{gpu}：空きVRAM {vram} GiB・空きRAM {ram} GiB。",
+    "model_required": "まずダウンロード済みモデルを選んでください。Gengo Duetが自動で選ぶことはありません。",
+    "model_loaded_external": "{model}はLM Studioですでに読み込まれています。",
+    "model_fit_safe": "{model}は安全範囲内です：約{need} GiB必要で、安全に利用できるのは{available} GiBです。",
+    "model_fit_unknown": "読み込みをブロックしました：Gengo Duetは{model}に必要なメモリを確認できませんでした。",
+    "model_fit_blocked": "安全のためブロック：{model}は約{need} GiB必要な可能性がありますが、安全に利用できるのは{available} GiBだけです。",
+    "model_status_loaded": "読込済み",
+    "model_status_safe": "安全に読込可",
+    "model_status_blocked": "安全ロック中",
+    "refresh_models": "モデルを更新",
+    "model_not_loaded": "{selected}は読み込まれていません。設定を開き、先に「モデルを読み込む」を使用してください。",
+    "catalog_unavailable": "Gengo DuetはLM Studioのモデル一覧を読み取れませんでした。サーバーを起動して、もう一度お試しください。"
   }
 }

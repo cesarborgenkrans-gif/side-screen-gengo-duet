@@ -15,11 +15,21 @@ Selene-sensei teach Japanese together. One OpenAI-compatible model plays both
 teachers over a shared lesson transcript: Tsuki makes the material speakable;
 Selene makes its grammar, kanji, and nuance easier to remember.
 
+**Gengo Duet is a side-screen app by design.** When a secondary display is
+connected, the app starts there and fills that screen. The main-screen control
+can move it temporarily; if only one display is available, Gengo Duet opens on
+that display instead.
+
 ## Download or run from source
 
 Windows users can download the portable app from the
 [latest GitHub release](https://github.com/cesarborgenkrans-gif/side-screen-gengo-duet/releases/latest).
-The portable build does not need an installer.
+The portable build does not need an installer. For the intended tiny-classroom
+layout, connect the secondary screen before launching the app.
+
+> **Release safety note:** v1.0.1 replaces the original v1.0.0 portable build
+> with the memory guardrails described below. Use v1.0.1 or newer when loading
+> local models through Gengo Duet.
 
 To run from source:
 
@@ -55,6 +65,12 @@ Gengo Duet needs an OpenAI-compatible chat endpoint. It includes presets for:
 Open settings in the app, choose a provider and model, and add an API key only
 when the provider requires one. Image lessons require a vision-capable model.
 VoiceGen Oui is optional and defaults to `http://localhost:3113`.
+
+For LM Studio, Gengo Duet never chooses or loads a model automatically. Its
+large Settings view lists downloaded models, checks current VRAM and RAM, and
+locks the load action when the selected model is above the computer's safe
+memory limit or the required measurements are unavailable. A model that is
+already running in LM Studio can be used without loading another copy.
 
 Local LM Studio, Ollama, and VoiceGen use keeps lesson material on your machine.
 A cloud endpoint receives the text or image you submit and may charge for API

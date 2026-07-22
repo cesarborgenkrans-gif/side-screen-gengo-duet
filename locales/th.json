@@ -4,7 +4,7 @@
   "autonym": "ไทย",
   "displayName": "Thai",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "การตั้งค่า",
     "provider": "ผู้ให้บริการ LLM",
@@ -71,6 +71,27 @@
     "copied": "คัดลอกแล้ว ✓",
     "voice_credit": "ส่วนเสริม TTS บนเครื่องแบบเลือกใช้:",
     "privacy_local": "ผู้ให้บริการบนเครื่อง: เนื้อหาบทเรียนจะอยู่ในคอมพิวเตอร์เครื่องนี้",
-    "privacy_cloud": "ผู้ให้บริการคลาวด์: เนื้อหาบทเรียนที่ส่งจะถูกส่งต่อไปยังบริการที่เลือก"
+    "privacy_cloud": "ผู้ให้บริการคลาวด์: เนื้อหาบทเรียนที่ส่งจะถูกส่งต่อไปยังบริการที่เลือก",
+    "close": "ปิด",
+    "close_title": "ปิด Gengo Duet",
+    "settings_title": "การตั้งค่าโมเดลและเสียง",
+    "settings_close": "ปิดการตั้งค่า",
+    "model_choose": "เลือกโมเดลที่ดาวน์โหลดแล้ว",
+    "hardware_title": "ตรวจสอบความปลอดภัยของคอมพิวเตอร์",
+    "hardware_checking": "กำลังตรวจสอบ VRAM และ RAM...",
+    "hardware_cloud": "ผู้ให้บริการคลาวด์จะไม่โหลดโมเดลบนคอมพิวเตอร์เครื่องนี้",
+    "hardware_unknown": "ไม่สามารถวัดหน่วยความจำได้ การโหลดโมเดลใหม่ถูกล็อกไว้เพื่อความปลอดภัย",
+    "hardware_ready": "{gpu}: VRAM ว่าง {vram} GiB · RAM ว่าง {ram} GiB",
+    "model_required": "โปรดเลือกโมเดลที่ดาวน์โหลดแล้วก่อน Gengo Duet จะไม่เลือกโมเดลให้อัตโนมัติ",
+    "model_loaded_external": "โหลด {model} ไว้ใน LM Studio แล้ว",
+    "model_fit_safe": "{model} อยู่ในขีดจำกัดที่ปลอดภัย: ต้องใช้ประมาณ {need} GiB; มี {available} GiB ที่ใช้งานได้อย่างปลอดภัย",
+    "model_fit_unknown": "บล็อกการโหลด: Gengo Duet ไม่สามารถตรวจสอบหน่วยความจำที่ {model} ต้องใช้ได้",
+    "model_fit_blocked": "บล็อกเพื่อความปลอดภัย: {model} อาจต้องใช้ประมาณ {need} GiB แต่มีเพียง {available} GiB ที่ใช้งานได้อย่างปลอดภัย",
+    "model_status_loaded": "โหลดแล้ว",
+    "model_status_safe": "โหลดได้อย่างปลอดภัย",
+    "model_status_blocked": "ล็อกเพื่อความปลอดภัย",
+    "refresh_models": "รีเฟรชโมเดล",
+    "model_not_loaded": "ยังไม่ได้โหลด {selected} โปรดเปิดการตั้งค่าและใช้ โหลดโมเดล ก่อน",
+    "catalog_unavailable": "Gengo Duet ไม่สามารถอ่านรายการโมเดลของ LM Studio ได้ โปรดเปิดเซิร์ฟเวอร์แล้วลองอีกครั้ง"
   }
 }

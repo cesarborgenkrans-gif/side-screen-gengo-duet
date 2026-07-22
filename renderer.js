@@ -28,8 +28,8 @@
   }
 
   const THEMES = ['sakura', 'matcha', 'indigo', 'sunrise', 'ink'];
-  let theme = localStorage.getItem('gengo-theme') || 'sakura';
-  if (!THEMES.includes(theme)) theme = 'sakura';
+  let theme = localStorage.getItem('gengo-theme') || 'ink';
+  if (!THEMES.includes(theme)) theme = 'ink';
   function applyTheme() {
     document.body.dataset.theme = theme;
     document.querySelectorAll('.theme-swatch').forEach(btn => {
@@ -59,8 +59,7 @@
   };
   let settings = loadSettings();
   const trimURL = u => (u || DEFAULTS.url).replace(/\/+$/, '');
-  const DEFAULT_MODEL = 'google/gemma-4-12b';
-  const modelId = () => (settings.model || '').trim() || DEFAULT_MODEL;
+  const modelId = () => (settings.model || '').trim();
 
   const VOICE_DESIGN = {
     tsuki: 'A bright, precise Japanese teacher; youthful, energetic, clear diction, warm classroom confidence, light anime mentor sparkle.',
@@ -157,7 +156,7 @@ TEACHING EDGE: reveal the hidden pattern, the reason a form works, or the mistak
   };
 
   async function llmChat(messages) {
-    const o = { baseURL: settings.url, apiKey: settings.key, model: modelId(), temperature: Number(settings.temp), messages };
+    const o = { baseURL: settings.url, apiKey: settings.key, model: modelId(), provider: settings.provider, temperature: Number(settings.temp), messages };
     if (bridge) return bridge.llmChat(o);
     try {
       const res = await fetch(`${trimURL(settings.url)}/chat/completions`, {
@@ -208,13 +207,6 @@ TEACHING EDGE: reveal the hidden pattern, the reason a form works, or the mistak
       el.textContent = '● ' + t('conn_off');
       el.title = r.error || '';
     }
-  }
-
-  let modelWarmPromise = null;
-  function warmModelSilently() {
-    if (!bridge || settings.provider !== 'lmstudio' || !bridge.llmLoad) return Promise.resolve({ ok: false, skipped: true });
-    if (!modelWarmPromise) modelWarmPromise = bridge.llmLoad({ baseURL: settings.url, apiKey: settings.key, model: modelId() }).catch(() => ({ ok: false }));
-    return modelWarmPromise;
   }
 
   function transcriptText(transcript) {
@@ -371,6 +363,11 @@ TEACHING EDGE: reveal the hidden pattern, the reason a form works, or the mistak
   async function runDuet() {
     if (running) return;
     if (!currentMode) { setStatus(t('st_pickmode'), 'warn'); return; }
+    if (!modelId()) {
+      setStatus(t('model_required'), 'warn');
+      openSettings();
+      return;
+    }
     if (!source && !$('src-input').value.trim()) {
       source = { kind: 'text', name: 'daily seed', text: defaultFocus(), truncated: false };
       $('src-chip').textContent = t('chip_text', { name: source.name, n: source.text.length });
@@ -383,10 +380,6 @@ TEACHING EDGE: reveal the hidden pattern, the reason a form works, or the mistak
     abort = false;
     toggleRun(true);
     clearLog();
-    if (bridge && settings.provider === 'lmstudio') {
-      setStatus(t('st_warming', { m: modelId() }));
-      await warmModelSilently();
-    }
     const voice = bridge && settings.voiceOn;
     if (voice) await preflightVram();
 
@@ -402,7 +395,11 @@ TEACHING EDGE: reveal the hidden pattern, the reason a form works, or the mistak
       if (abort) { setSpeaking(speaker, false); break; }
       if (!r.ok) {
         setSpeaking(speaker, false);
-        setStatus(t('st_llmerr', { e: r.error }), 'err');
+        const error = r.code === 'model_not_loaded'
+          ? t('model_not_loaded', { selected: r.model || modelId() })
+          : (r.code === 'model_required' ? t('model_required')
+            : (r.code === 'catalog_unavailable' ? t('catalog_unavailable') : r.error));
+        setStatus(t('st_llmerr', { e: error }), 'err');
         $('log-tag').textContent = tag('tag_error');
         toggleRun(false);
         return;
@@ -496,16 +493,147 @@ TEACHING EDGE: reveal the hidden pattern, the reason a form works, or the mistak
     }
   }
 
+  let modelCatalog = null;
+
+  function modelFieldValue() {
+    return ($('cfg-provider').value === 'lmstudio' ? $('cfg-model-local').value : $('cfg-model').value).trim();
+  }
+
+  function updateModelFieldMode(provider = $('cfg-provider').value) {
+    const local = provider === 'lmstudio';
+    $('cfg-model-local').hidden = !local;
+    $('cfg-model').hidden = local;
+  }
+
+  function paintHardwareSummary() {
+    const panel = $('hardware-safety');
+    const summary = $('hardware-summary');
+    if (!panel || !summary) return;
+    if ($('cfg-provider').value !== 'lmstudio') {
+      panel.className = 'hardware-safety safe';
+      summary.textContent = t('hardware_cloud');
+      return;
+    }
+    if (!modelCatalog?.ok || !modelCatalog.hardware?.ok) {
+      panel.className = 'hardware-safety blocked';
+      summary.textContent = t('hardware_unknown');
+      return;
+    }
+
+    const hardware = modelCatalog.hardware;
+    const base = t('hardware_ready', {
+      gpu: hardware.gpu?.name || 'GPU',
+      vram: hardware.gpu?.freeGiB ?? '?',
+      ram: hardware.ram?.freeGiB ?? '?'
+    });
+    const chosen = $('cfg-model-local').value;
+    const model = modelCatalog.models.find(item => item.key === chosen);
+    if (!model) {
+      panel.className = 'hardware-safety safe';
+      summary.textContent = `${base} ${t('model_required')}`;
+      return;
+    }
+    const assessment = model.assessment || {};
+    if (model.loaded) {
+      panel.className = 'hardware-safety safe';
+      summary.textContent = `${base} ${t('model_loaded_external', { model: model.displayName })}`;
+    } else if (assessment.allowed) {
+      panel.className = 'hardware-safety safe';
+      summary.textContent = `${base} ${t('model_fit_safe', { model: model.displayName, need: assessment.requiredGiB, available: assessment.availableGiB })}`;
+    } else if (assessment.code === 'hardware_unknown' || assessment.code === 'model_size_unknown') {
+      panel.className = 'hardware-safety blocked';
+      summary.textContent = `${base} ${t('model_fit_unknown', { model: model.displayName })}`;
+    } else {
+      panel.className = 'hardware-safety blocked';
+      summary.textContent = `${base} ${t('model_fit_blocked', { model: model.displayName, need: assessment.requiredGiB, available: assessment.availableGiB ?? 0 })}`;
+    }
+  }
+
+  async function refreshLocalModels() {
+    const select = $('cfg-model-local');
+    const refresh = $('btn-refresh-models');
+    if (!select || $('cfg-provider').value !== 'lmstudio') {
+      paintHardwareSummary();
+      return;
+    }
+    const selected = select.value || settings.model || '';
+    select.disabled = true;
+    if (refresh) refresh.disabled = true;
+    $('hardware-safety').className = 'hardware-safety checking';
+    $('hardware-summary').textContent = t('hardware_checking');
+    try {
+      if (!bridge?.llmCatalog) throw new Error(t('st_loadelectron'));
+      modelCatalog = await bridge.llmCatalog({
+        baseURL: $('cfg-url').value.trim() || DEFAULTS.url,
+        apiKey: $('cfg-key').value.trim() || 'lm-studio',
+        voiceURL: $('cfg-voice-url').value.trim() || DEFAULTS.voiceURL
+      });
+      select.replaceChildren();
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = t('model_choose');
+      select.appendChild(placeholder);
+      if (!modelCatalog.ok) throw new Error(modelCatalog.error || t('hardware_unknown'));
+      modelCatalog.models.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model.key;
+        const badge = model.loaded ? t('model_status_loaded') : (model.assessment?.allowed ? t('model_status_safe') : t('model_status_blocked'));
+        option.textContent = `${model.displayName} · ${model.sizeGiB} GiB · ${badge}`;
+        select.appendChild(option);
+      });
+      select.value = modelCatalog.models.some(model => model.key === selected) ? selected : '';
+      paintHardwareSummary();
+    } catch (error) {
+      modelCatalog = { ok: false, error: error.message };
+      select.replaceChildren();
+      const option = document.createElement('option');
+      option.value = selected;
+      option.textContent = selected || t('model_choose');
+      select.appendChild(option);
+      $('hardware-safety').className = 'hardware-safety blocked';
+      $('hardware-summary').textContent = `${t('hardware_unknown')} ${error.message || ''}`.trim();
+    } finally {
+      select.disabled = false;
+      if (refresh) refresh.disabled = false;
+    }
+  }
+
+  function openSettings() {
+    $('settings').hidden = false;
+    updateModelFieldMode();
+    refreshLocalModels();
+  }
+
+  function closeSettings() {
+    $('settings').hidden = true;
+    $('gear').focus();
+  }
+
   function applySettingsToFields() {
     $('cfg-provider').value = settings.provider || 'lmstudio';
     $('cfg-url').value = settings.url;
     $('cfg-model').value = settings.model;
+    $('cfg-model-local').value = settings.model;
     $('cfg-temp').value = settings.temp;
     $('cfg-key').value = settings.key;
     $('cfg-voice-url').value = settings.voiceURL;
     $('cfg-voice-on').checked = !!settings.voiceOn;
     $('cfg-always-on-top').checked = !!settings.alwaysOnTop;
     $('lesson-level').value = lessonLevel;
+    updateModelFieldMode(settings.provider || 'lmstudio');
+  }
+
+  function settingsFromFields() {
+    return {
+      provider: $('cfg-provider').value,
+      url: $('cfg-url').value.trim() || DEFAULTS.url,
+      model: modelFieldValue(),
+      temp: $('cfg-temp').value || 0.55,
+      key: $('cfg-key').value.trim() || 'lm-studio',
+      voiceURL: $('cfg-voice-url').value.trim() || DEFAULTS.voiceURL,
+      voiceOn: $('cfg-voice-on').checked,
+      alwaysOnTop: $('cfg-always-on-top').checked
+    };
   }
 
   async function applyWindowPreferences() {
@@ -523,32 +651,27 @@ TEACHING EDGE: reveal the hidden pattern, the reason a form works, or the mistak
     document.querySelector('.app').dataset.mode = currentMode || '';
   }
 
-  $('gear').addEventListener('click', () => { $('settings').hidden = !$('settings').hidden; });
+  $('gear').addEventListener('click', openSettings);
+  $('btn-settings-close').addEventListener('click', closeSettings);
   $('cfg-provider').addEventListener('change', e => {
     const p = PROVIDERS[e.target.value] || {};
     if (p.url) $('cfg-url').value = p.url;
     $('cfg-key').placeholder = p.keyHint || 'lm-studio';
     $('cfg-model').placeholder = p.modelHint || 'loaded local model';
+    updateModelFieldMode(e.target.value);
     paintPrivacy(e.target.value);
+    refreshLocalModels();
   });
+  $('cfg-model-local').addEventListener('change', paintHardwareSummary);
+  $('btn-refresh-models').addEventListener('click', refreshLocalModels);
   $('cfg-always-on-top').addEventListener('change', event => {
     settings.alwaysOnTop = !!event.target.checked;
     localStorage.setItem('gengo-settings', JSON.stringify(settings));
     applyWindowPreferences();
   });
   $('cfg-save').addEventListener('click', () => {
-    settings = {
-      provider: $('cfg-provider').value,
-      url: $('cfg-url').value.trim() || DEFAULTS.url,
-      model: $('cfg-model').value.trim(),
-      temp: $('cfg-temp').value || 0.55,
-      key: $('cfg-key').value.trim() || 'lm-studio',
-      voiceURL: $('cfg-voice-url').value.trim() || DEFAULTS.voiceURL,
-      voiceOn: $('cfg-voice-on').checked,
-      alwaysOnTop: $('cfg-always-on-top').checked
-    };
+    settings = settingsFromFields();
     localStorage.setItem('gengo-settings', JSON.stringify(settings));
-    modelWarmPromise = null;
     applyWindowPreferences();
     paintPrivacy();
     $('cfg-status').textContent = t('saved');
@@ -562,6 +685,13 @@ TEACHING EDGE: reveal the hidden pattern, the reason a form works, or the mistak
     const btn = $('btn-minimize'); if (!btn) return;
     if (!bridge || !bridge.minimizeWindow) { btn.hidden = true; return; }
     btn.addEventListener('click', () => bridge.minimizeWindow());
+  })();
+  (function wireClose() {
+    const btn = $('btn-close'); if (!btn) return;
+    btn.addEventListener('click', () => {
+      if (bridge?.closeWindow) bridge.closeWindow();
+      else window.close();
+    });
   })();
   (function wireScreenToggle() {
     const btn = $('screen-toggle'); if (!btn) return;
@@ -582,14 +712,30 @@ TEACHING EDGE: reveal the hidden pattern, the reason a form works, or the mistak
   const loadModelBtn = $('btn-loadmodel');
   if (loadModelBtn) loadModelBtn.addEventListener('click', async () => {
     if (!bridge || !bridge.llmLoad) { setStatus(t('st_loadelectron'), 'warn'); return; }
-    if (settings.provider !== 'lmstudio') { setStatus(t('st_loadlocal'), 'warn'); return; }
+    if ($('cfg-provider').value !== 'lmstudio') { setStatus(t('st_loadlocal'), 'warn'); return; }
+    const chosen = modelFieldValue();
+    if (!chosen) { setStatus(t('model_required'), 'warn'); paintHardwareSummary(); return; }
+    settings = settingsFromFields();
+    localStorage.setItem('gengo-settings', JSON.stringify(settings));
     loadModelBtn.disabled = true;
-    setStatus(t('st_modelloading', { m: modelId() }));
+    setStatus(t('st_modelloading', { m: chosen }));
     try {
-      const result = await bridge.llmLoad({ baseURL: settings.url, apiKey: settings.key, model: modelId() });
-      modelWarmPromise = Promise.resolve(result);
-      setStatus(result.ok ? t(result.status === 'already' ? 'st_modelalready' : 'st_modelloaded', { m: result.model || modelId() }) : t('st_modelerr', { e: result.error || 'unknown error' }), result.ok ? 'ok' : 'err');
+      const result = await bridge.llmLoad({ baseURL: settings.url, apiKey: settings.key, model: chosen, voiceURL: settings.voiceURL });
+      let message;
+      if (result.ok) {
+        message = t(result.status === 'already' ? 'st_modelalready' : 'st_modelloaded', { m: result.model || chosen });
+      } else if (result.code === 'insufficient_memory') {
+        message = t('model_fit_blocked', { model: result.model || chosen, need: result.assessment?.requiredGiB ?? '?', available: result.assessment?.availableGiB ?? 0 });
+      } else if (result.code === 'hardware_unknown' || result.code === 'model_size_unknown') {
+        message = t('model_fit_unknown', { model: result.model || chosen });
+      } else if (result.code === 'model_required') {
+        message = t('model_required');
+      } else {
+        message = t('st_modelerr', { e: result.error || 'unknown error' });
+      }
+      setStatus(message, result.ok ? 'ok' : 'err');
       if (result.ok) checkConnection();
+      await refreshLocalModels();
     } finally { loadModelBtn.disabled = false; }
   });
   $('btn-copy-all').addEventListener('click', async () => {
@@ -636,6 +782,8 @@ TEACHING EDGE: reveal the hidden pattern, the reason a form works, or the mistak
     if (!source) $('src-chip').textContent = t('chipnone');
     renderEmptyLog();
     checkConnection();
+    if (!$('settings').hidden) refreshLocalModels();
+    else paintHardwareSummary();
   }
 
   (function buildLangSelect() {

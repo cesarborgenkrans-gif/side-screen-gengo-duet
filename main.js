@@ -9,6 +9,15 @@ const { app, BrowserWindow, screen, ipcMain, globalShortcut, shell } = require('
 const path = require('path');
 const fs = require('fs/promises');
 const fsSync = require('fs');
+const {
+  LOAD_CONTEXT_LENGTH,
+  assessModelFit,
+  fetchLmStudioCatalog,
+  findCatalogModel,
+  isLoaded,
+  probeHardware,
+  publicModel
+} = require('./hardware-safety');
 
 const TARGET_X = parseInt(process.env.FOUNDRY_TARGET_X || '3440', 10);
 const MAIN_ZOOM = Math.min(1, Math.max(0.2, parseFloat(process.env.FOUNDRY_MAIN_ZOOM || '0.5')));
@@ -16,6 +25,8 @@ const WINDOWED = process.argv.includes('--windowed');
 const MAX_TEXT = 60000;   // cap pasted/loaded document size sent to the model
 const APP_USER_MODEL_ID = 'dev.sparklesnap.gengo-duet';
 const APP_ICON = path.join(__dirname, 'assets', 'icon.ico');
+
+if (process.env.GENGO_QA_USER_DATA) app.setPath('userData', path.resolve(process.env.GENGO_QA_USER_DATA));
 
 let mainWindow = null;
 let panelBounds = null;
@@ -50,7 +61,7 @@ function createWindow() {
   const base = {
     frame: false, resizable: false, movable: false, alwaysOnTop: false,
     icon: APP_ICON,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: '#f5f1e8',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), nodeIntegration: false, contextIsolation: true }
   };
   if (WINDOWED) {
@@ -127,6 +138,11 @@ ipcMain.handle('window-minimize', async () => {
   mainWindow.minimize();
   return { ok: true };
 });
+ipcMain.handle('window-close', async () => {
+  if (!mainWindow) return { ok: false, error: 'no window' };
+  mainWindow.close();
+  return { ok: true };
+});
 ipcMain.handle('window-set-always-on-top', async (_e, enabled) => {
   if (!mainWindow) return { ok: false, error: 'no window' };
   mainWindow.setAlwaysOnTop(!!enabled);
@@ -166,8 +182,20 @@ ipcMain.handle('read-source', async (_e, raw) => {
 
 // ── LLM chat (messages[] passthrough, supports vision content parts) ──
 ipcMain.handle('llm-chat', async (_e, opts) => {
-  const { baseURL, apiKey, model, temperature, messages } = opts || {};
+  const { baseURL, apiKey, model, temperature, messages, provider } = opts || {};
   try {
+    if (provider === 'lmstudio') {
+      const wanted = String(model || '').trim();
+      if (!wanted) return { ok: false, code: 'model_required', error: 'Choose a downloaded model first.' };
+      let catalog;
+      try { catalog = await fetchLmStudioCatalog({ baseURL, apiKey }); }
+      catch (error) { return { ok: false, code: 'catalog_unavailable', error: error.message }; }
+      const target = findCatalogModel(catalog.models, wanted);
+      if (!target) return { ok: false, code: 'model_missing', error: `Model "${wanted}" is not downloaded in LM Studio.` };
+      if (!isLoaded(target)) {
+        return { ok: false, code: 'model_not_loaded', model: target.key, error: `Load "${target.key}" safely from Settings before starting a lesson.` };
+      }
+    }
     const url = `${(baseURL || 'http://localhost:1234/v1').replace(/\/+$/, '')}/chat/completions`;
     const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey || 'lm-studio'}` };
     if (/openrouter\.ai/i.test(url)) { headers['HTTP-Referer'] = 'https://sparklesnap.dev'; headers['X-Title'] = 'SparkleSnap Gengo Duet'; }
@@ -196,41 +224,54 @@ ipcMain.handle('llm-models', async (_e, opts) => {
   } catch (e) { return { ok: false, error: e.message }; }
 });
 
-// Load a chosen local model through LM Studio's optional JIT loading path.
-// A one-token request is enough to warm a downloaded model without generating a lesson.
+ipcMain.handle('llm-catalog', async (_e, opts) => {
+  try {
+    const [{ origin, models }, hardware] = await Promise.all([
+      fetchLmStudioCatalog(opts || {}),
+      probeHardware(opts || {})
+    ]);
+    return { ok: true, origin, hardware, models: models.map(model => publicModel(model, hardware)) };
+  } catch (error) {
+    return { ok: false, code: 'catalog_unavailable', error: error.message };
+  }
+});
+
+// Load only an explicitly selected, downloaded model after a fail-closed memory check.
 ipcMain.handle('llm-load', async (_e, opts) => {
-  const { baseURL, apiKey, model } = opts || {};
-  const base = (baseURL || 'http://localhost:1234/v1').replace(/\/+$/, '');
-  const origin = base.replace(/\/v1$/, '');
+  const { baseURL, apiKey, model, voiceURL } = opts || {};
   const wanted = String(model || '').trim();
   const auth = { Authorization: `Bearer ${apiKey || 'lm-studio'}` };
-  if (!wanted) return { ok: false, error: 'no model id' };
-
-  let downloaded = [];
-  try {
-    const response = await fetch(`${origin}/api/v0/models`, { headers: auth });
-    if (response.ok) downloaded = (await response.json())?.data || [];
-  } catch {}
-
-  let target = wanted;
-  if (downloaded.length) {
-    const needle = wanted.toLowerCase();
-    const tail = needle.split('/').pop();
-    const match = downloaded.find(item => item.id === wanted)
-      || downloaded.find(item => String(item.id).toLowerCase().includes(needle))
-      || downloaded.find(item => String(item.id).toLowerCase().includes(tail));
-    if (!match) return { ok: false, status: 'missing', error: `Model "${wanted}" is not downloaded in LM Studio.` };
-    target = match.id;
-    if (match.state === 'loaded') return { ok: true, status: 'already', model: target };
-  }
+  if (!wanted) return { ok: false, code: 'model_required', error: 'Choose a downloaded model first.' };
 
   try {
-    const response = await fetch(`${base}/chat/completions`, {
+    const [{ origin, models }, hardware] = await Promise.all([
+      fetchLmStudioCatalog({ baseURL, apiKey }),
+      probeHardware({ voiceURL })
+    ]);
+    const target = findCatalogModel(models, wanted);
+    if (!target) return { ok: false, code: 'model_missing', error: `Model "${wanted}" is not downloaded in LM Studio.` };
+    if (isLoaded(target)) return { ok: true, status: 'already', code: 'already_loaded', model: target.key };
+
+    const assessment = assessModelFit(target, hardware);
+    if (!assessment.allowed) {
+      const error = assessment.code === 'hardware_unknown'
+        ? 'Memory could not be measured, so model loading is locked for safety.'
+        : `Model needs about ${assessment.requiredGiB} GiB; only ${assessment.availableGiB ?? 0} GiB is safely available.`;
+      return { ok: false, status: 'blocked', code: assessment.code, error, model: target.key, assessment, hardware };
+    }
+
+    const response = await fetch(`${origin}/api/v1/models/load`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', ...auth },
-      body: JSON.stringify({ model: target, messages: [{ role: 'user', content: 'ping' }], max_tokens: 1, temperature: 0, stream: false })
+      body: JSON.stringify({
+        model: target.key,
+        context_length: LOAD_CONTEXT_LENGTH,
+        flash_attention: true,
+        offload_kv_cache_to_gpu: false,
+        echo_load_config: true
+      })
     });
     if (!response.ok) return { ok: false, error: `LM Studio HTTP ${response.status}: ${(await response.text()).slice(0, 240)}` };
-    return { ok: true, status: 'loaded', model: target };
+    return { ok: true, status: 'loaded', code: 'loaded', model: target.key, assessment, hardware, load: await response.json() };
   } catch (error) { return { ok: false, error: error.message }; }
 });
 
@@ -286,6 +327,54 @@ app.whenReady().then(() => {
       output.backOnPanel = mainWindow.getBounds();
       output.ok = JSON.stringify(output.backOnPanel) === JSON.stringify(output.atStart);
       try { fsSync.writeFileSync(path.join(__dirname, 'autotest-bounds.json'), JSON.stringify(output, null, 2)); } catch {}
+      app.quit();
+    });
+  }
+  if (process.env.GENGO_UI_AUTOTEST === '1') {
+    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    mainWindow.webContents.once('did-finish-load', async () => {
+      await wait(900);
+      await mainWindow.webContents.executeJavaScript("document.getElementById('gear').click()");
+      await wait(2200);
+      const metrics = await mainWindow.webContents.executeJavaScript(`(async () => {
+        const select = document.getElementById('cfg-model-local');
+        if ([...select.options].some(option => option.value === 'google/gemma-4-12b')) {
+          select.value = 'google/gemma-4-12b';
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        const rect = id => {
+          const r = document.getElementById(id).getBoundingClientRect();
+          return { x: Math.round(r.x), y: Math.round(r.y), width: Math.round(r.width), height: Math.round(r.height) };
+        };
+        const guardResult = await window.gengo.llmLoad({
+          baseURL: 'http://localhost:1234/v1',
+          apiKey: 'lm-studio',
+          model: 'google/gemma-4-12b',
+          voiceURL: 'http://localhost:3113'
+        });
+        return {
+          theme: document.body.dataset.theme,
+          closeText: document.getElementById('btn-close').innerText.trim(),
+          closeRect: rect('btn-close'),
+          settingsHidden: document.getElementById('settings').hidden,
+          settingsRect: rect('settings'),
+          heading: document.getElementById('settings-heading').innerText.trim(),
+          hardwareText: document.getElementById('hardware-summary').innerText.trim(),
+          hardwareClass: document.getElementById('hardware-safety').className,
+          modelValue: select.value,
+          modelOptions: [...select.options].map(option => option.innerText),
+          labelFontPx: getComputedStyle(document.querySelector('.settings-grid > label')).fontSize,
+          inputFontPx: getComputedStyle(document.getElementById('cfg-model-local')).fontSize,
+          inputHeightPx: rect('cfg-model-local').height,
+          actionHeightPx: rect('btn-loadmodel').height,
+          guardResult
+        };
+      })()`);
+      const qaDir = path.join(__dirname, 'qa');
+      fsSync.mkdirSync(qaDir, { recursive: true });
+      fsSync.writeFileSync(path.join(qaDir, 'settings-live.json'), JSON.stringify(metrics, null, 2));
+      const image = await mainWindow.webContents.capturePage();
+      fsSync.writeFileSync(path.join(qaDir, 'settings-live.png'), image.toPNG());
       app.quit();
     });
   }

@@ -1,7 +1,7 @@
 {
   "name": "gengo-duet-electron",
-  "version": "1.0.0",
-  "description": "Gengo Duet - two-mascot Japanese teaching dashboard for compact Electron panels",
+  "version": "1.0.1",
+  "description": "A side-screen-first Japanese classroom powered by your chosen LLM",
   "author": "Cesar Borgenkrans / SparkleSnap",
   "license": "MIT",
   "homepage": "https://github.com/cesarborgenkrans-gif/side-screen-gengo-duet",
@@ -14,7 +14,8 @@
     "start": "electron .",
     "dev": "electron . --windowed",
     "check:i18n": "node scripts/check-i18n.mjs",
-    "check": "node --check main.js && node --check preload.js && node --check renderer.js && node --check i18n.js && npm run check:i18n",
+    "check:safety": "node scripts/check-hardware-safety.cjs",
+    "check": "node --check main.js && node --check preload.js && node --check renderer.js && node --check i18n.js && node --check hardware-safety.js && npm run check:safety && npm run check:i18n",
     "dist:win": "electron-builder --win portable --x64"
   },
   "build": {
@@ -26,6 +27,7 @@
     },
     "files": [
       "main.js",
+      "hardware-safety.js",
       "preload.js",
       "renderer.js",
       "i18n.js",

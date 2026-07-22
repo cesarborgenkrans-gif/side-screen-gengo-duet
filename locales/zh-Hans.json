@@ -4,7 +4,7 @@
   "autonym": "简体中文",
   "displayName": "Simplified Chinese",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "设置",
     "provider": "LLM 提供方",
@@ -71,6 +71,27 @@
     "copied": "已复制 ✓",
     "voice_credit": "可选的本地 TTS 扩展：",
     "privacy_local": "本地提供方：课程材料会留在这台电脑上。",
-    "privacy_cloud": "云端提供方：提交的课程材料会发送到所选服务。"
+    "privacy_cloud": "云端提供方：提交的课程材料会发送到所选服务。",
+    "close": "关闭",
+    "close_title": "关闭 Gengo Duet",
+    "settings_title": "模型和语音设置",
+    "settings_close": "关闭设置",
+    "model_choose": "选择已下载的模型",
+    "hardware_title": "电脑安全检查",
+    "hardware_checking": "正在检查 VRAM 和 RAM...",
+    "hardware_cloud": "云端提供方不会在此电脑上加载模型。",
+    "hardware_unknown": "无法测量内存。为安全起见，已锁定新模型加载。",
+    "hardware_ready": "{gpu}：可用 VRAM {vram} GiB · 可用 RAM {ram} GiB。",
+    "model_required": "请先选择已下载的模型。Gengo Duet 绝不会自动选择模型。",
+    "model_loaded_external": "{model} 已在 LM Studio 中加载。",
+    "model_fit_safe": "{model} 符合安全限制：约需 {need} GiB；可安全使用 {available} GiB。",
+    "model_fit_unknown": "已阻止加载：Gengo Duet 无法确认 {model} 所需的内存。",
+    "model_fit_blocked": "为安全起见已阻止：{model} 可能需要约 {need} GiB，但仅有 {available} GiB 可安全使用。",
+    "model_status_loaded": "已加载",
+    "model_status_safe": "可安全加载",
+    "model_status_blocked": "已安全锁定",
+    "refresh_models": "刷新模型",
+    "model_not_loaded": "{selected} 尚未加载。请打开设置并先使用“加载模型”。",
+    "catalog_unavailable": "Gengo Duet 无法读取 LM Studio 的模型列表。请启动服务器后重试。"
   }
 }

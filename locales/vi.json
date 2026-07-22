@@ -4,7 +4,7 @@
   "autonym": "Tiếng Việt",
   "displayName": "Vietnamese",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "cài đặt",
     "provider": "Nhà cung cấp LLM",
@@ -71,6 +71,27 @@
     "copied": "Đã sao chép ✓",
     "voice_credit": "Tiện ích TTS cục bộ tùy chọn:",
     "privacy_local": "Nhà cung cấp cục bộ: tài liệu bài học nằm lại trên máy tính này.",
-    "privacy_cloud": "Nhà cung cấp đám mây: tài liệu bài học đã gửi sẽ được chuyển tới dịch vụ đã chọn."
+    "privacy_cloud": "Nhà cung cấp đám mây: tài liệu bài học đã gửi sẽ được chuyển tới dịch vụ đã chọn.",
+    "close": "Đóng",
+    "close_title": "Đóng Gengo Duet",
+    "settings_title": "Cài đặt mô hình và giọng nói",
+    "settings_close": "Đóng cài đặt",
+    "model_choose": "Chọn mô hình đã tải xuống",
+    "hardware_title": "Kiểm tra an toàn máy tính",
+    "hardware_checking": "Đang kiểm tra VRAM và RAM...",
+    "hardware_cloud": "Nhà cung cấp đám mây không tải mô hình trên máy tính này.",
+    "hardware_unknown": "Không thể đo bộ nhớ. Việc tải mô hình mới đã bị khóa để bảo đảm an toàn.",
+    "hardware_ready": "{gpu}: còn trống {vram} GiB VRAM · còn trống {ram} GiB RAM.",
+    "model_required": "Hãy chọn một mô hình đã tải xuống trước. Gengo Duet không bao giờ tự động chọn mô hình.",
+    "model_loaded_external": "{model} đã được tải trong LM Studio.",
+    "model_fit_safe": "{model} nằm trong giới hạn an toàn: cần khoảng {need} GiB; có thể dùng an toàn {available} GiB.",
+    "model_fit_unknown": "Đã chặn tải: Gengo Duet không thể xác minh bộ nhớ mà {model} cần.",
+    "model_fit_blocked": "Đã chặn để bảo đảm an toàn: {model} có thể cần khoảng {need} GiB, nhưng chỉ có {available} GiB dùng được an toàn.",
+    "model_status_loaded": "đã tải",
+    "model_status_safe": "an toàn để tải",
+    "model_status_blocked": "đã khóa an toàn",
+    "refresh_models": "Làm mới mô hình",
+    "model_not_loaded": "{selected} chưa được tải. Hãy mở cài đặt và dùng Tải mô hình trước.",
+    "catalog_unavailable": "Gengo Duet không thể đọc danh sách mô hình của LM Studio. Hãy khởi động máy chủ rồi thử lại."
   }
 }

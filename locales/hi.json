@@ -4,7 +4,7 @@
   "autonym": "हिन्दी",
   "displayName": "Hindi",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "सेटिंग्स",
     "provider": "LLM प्रदाता",
@@ -71,6 +71,27 @@
     "copied": "कॉपी हो गया ✓",
     "voice_credit": "वैकल्पिक स्थानीय TTS ऐड-ऑन:",
     "privacy_local": "स्थानीय प्रदाता: आपकी पाठ सामग्री इसी कंप्यूटर पर रहती है।",
-    "privacy_cloud": "क्लाउड प्रदाता: भेजी गई पाठ सामग्री चुनी हुई सेवा को जाती है।"
+    "privacy_cloud": "क्लाउड प्रदाता: भेजी गई पाठ सामग्री चुनी हुई सेवा को जाती है।",
+    "close": "बंद करें",
+    "close_title": "Gengo Duet बंद करें",
+    "settings_title": "मॉडल और आवाज़ की सेटिंग",
+    "settings_close": "सेटिंग बंद करें",
+    "model_choose": "डाउनलोड किया हुआ मॉडल चुनें",
+    "hardware_title": "कंप्यूटर सुरक्षा जाँच",
+    "hardware_checking": "VRAM और RAM जाँची जा रही है...",
+    "hardware_cloud": "क्लाउड प्रदाता इस कंप्यूटर पर मॉडल लोड नहीं करता।",
+    "hardware_unknown": "मेमोरी मापी नहीं जा सकी। सुरक्षा के लिए नया मॉडल लोड करना लॉक है।",
+    "hardware_ready": "{gpu}: {vram} GiB VRAM खाली · {ram} GiB RAM खाली।",
+    "model_required": "पहले डाउनलोड किया हुआ मॉडल चुनें। Gengo Duet कभी भी अपने आप मॉडल नहीं चुनता।",
+    "model_loaded_external": "{model} पहले से LM Studio में लोड है।",
+    "model_fit_safe": "{model} सुरक्षा सीमा में है: लगभग {need} GiB चाहिए; {available} GiB सुरक्षित रूप से उपलब्ध है।",
+    "model_fit_unknown": "लोड रोका गया: Gengo Duet यह सत्यापित नहीं कर सका कि {model} को कितनी मेमोरी चाहिए।",
+    "model_fit_blocked": "सुरक्षा के लिए रोका गया: {model} को लगभग {need} GiB चाहिए हो सकता है, लेकिन केवल {available} GiB सुरक्षित रूप से उपलब्ध है।",
+    "model_status_loaded": "लोड है",
+    "model_status_safe": "लोड करना सुरक्षित",
+    "model_status_blocked": "सुरक्षा लॉक",
+    "refresh_models": "मॉडल रीफ़्रेश करें",
+    "model_not_loaded": "{selected} लोड नहीं है। सेटिंग खोलें और पहले मॉडल लोड करें का उपयोग करें।",
+    "catalog_unavailable": "Gengo Duet LM Studio की मॉडल सूची नहीं पढ़ सका। उसका सर्वर शुरू करें और फिर कोशिश करें।"
   }
 }

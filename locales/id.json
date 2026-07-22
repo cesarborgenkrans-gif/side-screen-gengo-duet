@@ -4,7 +4,7 @@
   "autonym": "Bahasa Indonesia",
   "displayName": "Indonesian",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "pengaturan",
     "provider": "Penyedia LLM",
@@ -71,6 +71,27 @@
     "copied": "Disalin ✓",
     "voice_credit": "Pengaya TTS lokal opsional:",
     "privacy_local": "Penyedia lokal: materi pelajaran tetap berada di komputer ini.",
-    "privacy_cloud": "Penyedia cloud: materi pelajaran yang dikirim diteruskan ke layanan terpilih."
+    "privacy_cloud": "Penyedia cloud: materi pelajaran yang dikirim diteruskan ke layanan terpilih.",
+    "close": "Tutup",
+    "close_title": "Tutup Gengo Duet",
+    "settings_title": "Pengaturan model dan suara",
+    "settings_close": "Tutup pengaturan",
+    "model_choose": "Pilih model yang sudah diunduh",
+    "hardware_title": "Pemeriksaan keamanan komputer",
+    "hardware_checking": "Memeriksa VRAM dan RAM...",
+    "hardware_cloud": "Penyedia cloud tidak memuat model di komputer ini.",
+    "hardware_unknown": "Memori tidak dapat diukur. Pemuatan model baru dikunci demi keamanan.",
+    "hardware_ready": "{gpu}: VRAM kosong {vram} GiB · RAM kosong {ram} GiB.",
+    "model_required": "Pilih model yang sudah diunduh terlebih dahulu. Gengo Duet tidak pernah memilihnya secara otomatis.",
+    "model_loaded_external": "{model} sudah dimuat di LM Studio.",
+    "model_fit_safe": "{model} sesuai batas aman: perlu sekitar {need} GiB; {available} GiB tersedia dengan aman.",
+    "model_fit_unknown": "Pemuatan diblokir: Gengo Duet tidak dapat memverifikasi memori yang dibutuhkan {model}.",
+    "model_fit_blocked": "Diblokir demi keamanan: {model} mungkin memerlukan sekitar {need} GiB, tetapi hanya {available} GiB yang tersedia dengan aman.",
+    "model_status_loaded": "sudah dimuat",
+    "model_status_safe": "aman untuk dimuat",
+    "model_status_blocked": "dikunci demi keamanan",
+    "refresh_models": "Segarkan model",
+    "model_not_loaded": "{selected} belum dimuat. Buka pengaturan dan gunakan Muat model terlebih dahulu.",
+    "catalog_unavailable": "Gengo Duet tidak dapat membaca daftar model LM Studio. Nyalakan servernya lalu coba lagi."
   }
 }

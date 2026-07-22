@@ -4,7 +4,7 @@
   "autonym": "Français",
   "displayName": "French",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "paramètres",
     "provider": "Fournisseur LLM",
@@ -71,6 +71,27 @@
     "copied": "Copié ✓",
     "voice_credit": "Module TTS local facultatif :",
     "privacy_local": "Fournisseur local : le contenu du cours reste sur cet ordinateur.",
-    "privacy_cloud": "Fournisseur cloud : le contenu envoyé est transmis au service sélectionné."
+    "privacy_cloud": "Fournisseur cloud : le contenu envoyé est transmis au service sélectionné.",
+    "close": "Fermer",
+    "close_title": "Fermer Gengo Duet",
+    "settings_title": "Réglages du modèle et de la voix",
+    "settings_close": "Fermer les réglages",
+    "model_choose": "Choisir un modèle téléchargé",
+    "hardware_title": "Contrôle de sécurité de l’ordinateur",
+    "hardware_checking": "Vérification de la VRAM et de la RAM...",
+    "hardware_cloud": "Un fournisseur cloud ne charge pas de modèle sur cet ordinateur.",
+    "hardware_unknown": "La mémoire n’a pas pu être mesurée. Le chargement de nouveaux modèles est verrouillé par sécurité.",
+    "hardware_ready": "{gpu} : {vram} GiB de VRAM libre · {ram} GiB de RAM libre.",
+    "model_required": "Choisissez d’abord un modèle téléchargé. Gengo Duet n’en choisit jamais automatiquement.",
+    "model_loaded_external": "{model} est déjà chargé dans LM Studio.",
+    "model_fit_safe": "{model} respecte la limite de sécurité : environ {need} GiB nécessaires ; {available} GiB disponibles en toute sécurité.",
+    "model_fit_unknown": "Chargement bloqué : Gengo Duet n’a pas pu vérifier la mémoire nécessaire à {model}.",
+    "model_fit_blocked": "Bloqué par sécurité : {model} peut nécessiter environ {need} GiB, mais seuls {available} GiB sont disponibles en toute sécurité.",
+    "model_status_loaded": "chargé",
+    "model_status_safe": "chargement sûr",
+    "model_status_blocked": "verrouillé par sécurité",
+    "refresh_models": "Actualiser les modèles",
+    "model_not_loaded": "{selected} n’est pas chargé. Ouvrez les réglages et utilisez d’abord Charger le modèle.",
+    "catalog_unavailable": "Gengo Duet n’a pas pu lire la liste des modèles de LM Studio. Démarrez son serveur et réessayez."
   }
 }

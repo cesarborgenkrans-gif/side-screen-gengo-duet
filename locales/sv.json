@@ -4,7 +4,7 @@
   "autonym": "Svenska",
   "displayName": "Swedish",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "inställningar",
     "provider": "LLM-leverantör",
@@ -71,6 +71,27 @@
     "copied": "Kopierat ✓",
     "voice_credit": "Valfritt tillägg för lokal TTS:",
     "privacy_local": "Lokal leverantör: ditt lektionsmaterial stannar på den här datorn.",
-    "privacy_cloud": "Molnleverantör: inskickat lektionsmaterial skickas till den valda tjänsten."
+    "privacy_cloud": "Molnleverantör: inskickat lektionsmaterial skickas till den valda tjänsten.",
+    "close": "Stäng",
+    "close_title": "Stäng Gengo Duet",
+    "settings_title": "Modell- och röstinställningar",
+    "settings_close": "Stäng inställningar",
+    "model_choose": "Välj en nedladdad modell",
+    "hardware_title": "Säkerhetskontroll av datorn",
+    "hardware_checking": "Kontrollerar VRAM och RAM...",
+    "hardware_cloud": "En molnleverantör laddar ingen modell på den här datorn.",
+    "hardware_unknown": "Minnet kunde inte mätas. Inläsning av nya modeller är låst för säkerhets skull.",
+    "hardware_ready": "{gpu}: {vram} GiB ledigt VRAM · {ram} GiB ledigt RAM.",
+    "model_required": "Välj först en nedladdad modell. Gengo Duet väljer aldrig en automatiskt.",
+    "model_loaded_external": "{model} är redan inläst i LM Studio.",
+    "model_fit_safe": "{model} ryms inom säkerhetsgränsen: cirka {need} GiB behövs; {available} GiB är säkert tillgängligt.",
+    "model_fit_unknown": "Inläsning blockerad: Gengo Duet kunde inte verifiera hur mycket minne {model} behöver.",
+    "model_fit_blocked": "Blockerad för säkerhets skull: {model} kan behöva cirka {need} GiB, men bara {available} GiB är säkert tillgängligt.",
+    "model_status_loaded": "inläst",
+    "model_status_safe": "säker att läsa in",
+    "model_status_blocked": "säkerhetslåst",
+    "refresh_models": "Uppdatera modeller",
+    "model_not_loaded": "{selected} är inte inläst. Öppna inställningarna och använd Ladda modell först.",
+    "catalog_unavailable": "Gengo Duet kunde inte läsa LM Studios modellista. Starta servern och försök igen."
   }
 }

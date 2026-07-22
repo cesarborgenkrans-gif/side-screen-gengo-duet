@@ -4,7 +4,7 @@
   "autonym": "Türkçe",
   "displayName": "Turkish",
   "direction": "ltr",
-  "sourceHash": "sha256:8249cd4c97871c634a46ef4c48660d1bd4bc02a0e03ab47e87c062e7a46b458d",
+  "sourceHash": "sha256:ce15b18a1e6dca45b6902105e61ba789c50ecccdb0558f26e8c2ddb0d1e7336b",
   "strings": {
     "settings": "ayarlar",
     "provider": "LLM sağlayıcısı",
@@ -71,6 +71,27 @@
     "copied": "Kopyalandı ✓",
     "voice_credit": "İsteğe bağlı yerel TTS eklentisi:",
     "privacy_local": "Yerel sağlayıcı: ders materyaliniz bu bilgisayarda kalır.",
-    "privacy_cloud": "Bulut sağlayıcısı: gönderilen ders materyali seçilen hizmete iletilir."
+    "privacy_cloud": "Bulut sağlayıcısı: gönderilen ders materyali seçilen hizmete iletilir.",
+    "close": "Kapat",
+    "close_title": "Gengo Duet'i kapat",
+    "settings_title": "Model ve ses ayarları",
+    "settings_close": "Ayarları kapat",
+    "model_choose": "İndirilmiş bir model seçin",
+    "hardware_title": "Bilgisayar güvenlik kontrolü",
+    "hardware_checking": "VRAM ve RAM kontrol ediliyor...",
+    "hardware_cloud": "Bulut sağlayıcısı bu bilgisayara model yüklemez.",
+    "hardware_unknown": "Bellek ölçülemedi. Güvenlik için yeni model yükleme kilitlendi.",
+    "hardware_ready": "{gpu}: {vram} GiB boş VRAM · {ram} GiB boş RAM.",
+    "model_required": "Önce indirilmiş bir model seçin. Gengo Duet hiçbir zaman otomatik olarak model seçmez.",
+    "model_loaded_external": "{model} zaten LM Studio'da yüklü.",
+    "model_fit_safe": "{model} güvenlik sınırına uyuyor: yaklaşık {need} GiB gerekli; {available} GiB güvenle kullanılabilir.",
+    "model_fit_unknown": "Yükleme engellendi: Gengo Duet, {model} için gereken belleği doğrulayamadı.",
+    "model_fit_blocked": "Güvenlik için engellendi: {model} yaklaşık {need} GiB gerektirebilir, ancak yalnızca {available} GiB güvenle kullanılabilir.",
+    "model_status_loaded": "yüklü",
+    "model_status_safe": "güvenle yüklenebilir",
+    "model_status_blocked": "güvenlik kilidi",
+    "refresh_models": "Modelleri yenile",
+    "model_not_loaded": "{selected} yüklü değil. Ayarları açın ve önce Model yükle seçeneğini kullanın.",
+    "catalog_unavailable": "Gengo Duet, LM Studio model listesini okuyamadı. Sunucusunu başlatıp yeniden deneyin."
   }
 }
