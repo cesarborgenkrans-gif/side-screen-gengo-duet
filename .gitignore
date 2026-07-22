@@ -1,0 +1,31 @@
+# dependencies
+node_modules/
+dist/
+release-dist/
+
+# machine-specific / personal — never publish
+displays-detected.json
+autotest-bounds.json
+*.local
+*.local.*
+.env
+.env.*
+secrets.*
+*.key
+*.pem
+
+# logs / caches / OS cruft
+*.log
+__pycache__/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# design workshop material; keep locally, never ship in the app repo
+assets/icon-candidates/
+qa/

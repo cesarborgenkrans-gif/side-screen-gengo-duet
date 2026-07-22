@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Gengo Duet">
+  <rect width="256" height="256" rx="56" fill="#111a16"/>
+  <path d="M0 196h256v60H0z" fill="#1f2e23"/>
+  <path d="M0 0h256v92H0z" fill="#17241a"/>
+  <circle cx="74" cy="64" r="28" fill="#ff7fa7"/>
+  <circle cx="182" cy="64" r="28" fill="#6de8ff"/>
+  <path d="M75 64h106" stroke="#f4f7dc" stroke-width="12" stroke-linecap="round" opacity=".9"/>
+  <rect x="42" y="104" width="172" height="12" rx="6" fill="#b8d96e"/>
+  <rect x="64" y="140" width="128" height="12" rx="6" fill="#f4f7dc"/>
+  <rect x="72" y="174" width="112" height="12" rx="6" fill="#f4f7dc"/>
+  <rect x="104" y="104" width="14" height="88" rx="7" fill="#f4f7dc"/>
+  <rect x="138" y="104" width="14" height="88" rx="7" fill="#f4f7dc"/>
+  <path d="M58 216h140" stroke="#ffb347" stroke-width="10" stroke-linecap="round"/>
+</svg>

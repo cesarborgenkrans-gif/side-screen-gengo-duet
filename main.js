@@ -1,0 +1,296 @@
+/* ============================================================
+   DUET — main process
+   Frameless window sized to the exact bounds of the target panel.
+   IPC: read-source (a "Copy as path" file → text or base64 image, or raw text),
+   llm-chat (messages[]-based, proxied to LM Studio to dodge CORS + support vision),
+   llm-models (connection test). One LM Studio model drives both personas.
+   ============================================================ */
+const { app, BrowserWindow, screen, ipcMain, globalShortcut, shell } = require('electron');
+const path = require('path');
+const fs = require('fs/promises');
+const fsSync = require('fs');
+
+const TARGET_X = parseInt(process.env.FOUNDRY_TARGET_X || '3440', 10);
+const MAIN_ZOOM = Math.min(1, Math.max(0.2, parseFloat(process.env.FOUNDRY_MAIN_ZOOM || '0.5')));
+const WINDOWED = process.argv.includes('--windowed');
+const MAX_TEXT = 60000;   // cap pasted/loaded document size sent to the model
+const APP_USER_MODEL_ID = 'dev.sparklesnap.gengo-duet';
+const APP_ICON = path.join(__dirname, 'assets', 'icon.ico');
+
+let mainWindow = null;
+let panelBounds = null;
+let currentLocation = 'panel';
+let boundsReassertTimer = null;
+
+function logDisplays() {
+  const primaryId = screen.getPrimaryDisplay().id;
+  const info = screen.getAllDisplays().map((d, i) => ({
+    index: i, id: d.id, primary: d.id === primaryId,
+    bounds: d.bounds, size: d.size, rotation: d.rotation, scaleFactor: d.scaleFactor
+  }));
+  try { fsSync.writeFileSync(path.join(__dirname, 'displays-detected.json'), JSON.stringify(info, null, 2)); } catch {}
+}
+
+function pickTargetDisplay() {
+  const displays = screen.getAllDisplays();
+  const idx = parseInt(process.env.FOUNDRY_TARGET_DISPLAY ?? '', 10);
+  if (!Number.isNaN(idx) && displays[idx]) return displays[idx];
+  const sig = displays.find(d => {
+    const { width: w, height: h } = d.bounds;
+    return (w === 1440 && h === 2560) || (w === 2560 && h === 1440);
+  });
+  if (sig) return sig;
+  const byX = displays.find(d => d.bounds.x >= TARGET_X);
+  if (byX) return byX;
+  const primaryId = screen.getPrimaryDisplay().id;
+  return displays.find(d => d.id !== primaryId) || displays[displays.length - 1];
+}
+
+function createWindow() {
+  const base = {
+    frame: false, resizable: false, movable: false, alwaysOnTop: false,
+    icon: APP_ICON,
+    backgroundColor: '#0d0d1a',
+    webPreferences: { preload: path.join(__dirname, 'preload.js'), nodeIntegration: false, contextIsolation: true }
+  };
+  if (WINDOWED) {
+    mainWindow = new BrowserWindow({ ...base, width: 480, height: 854, frame: true, resizable: true, movable: true, alwaysOnTop: false });
+  } else {
+    const t = pickTargetDisplay();
+    const b = t.bounds;
+    mainWindow = new BrowserWindow({ ...base, x: b.x, y: b.y, width: b.width, height: b.height });
+    const enforce = () => { try { mainWindow.setBounds({ x: b.x, y: b.y, width: b.width, height: b.height }); } catch {} };
+    mainWindow.once('ready-to-show', enforce);
+    mainWindow.webContents.once('did-finish-load', enforce);
+    // The display owns home geometry. Reading a fresh cross-monitor window here
+    // can capture Windows' temporary clamp and poison every later return.
+    panelBounds = { x: b.x, y: b.y, width: b.width, height: b.height };
+  }
+  mainWindow.loadFile('index.html');
+  if (!panelBounds) {
+    const [x, y] = mainWindow.getPosition();
+    const [width, height] = mainWindow.getSize();
+    panelBounds = { x, y, width, height };
+  }
+  currentLocation = 'panel';
+  mainWindow.on('closed', () => (mainWindow = null));
+}
+
+function computeMainStripBounds() {
+  const workArea = screen.getPrimaryDisplay().workArea;
+  const aspect = panelBounds?.height ? panelBounds.width / panelBounds.height : 0.5625;
+  let height = workArea.height;
+  let width = Math.round(height * aspect);
+  const maxWidth = Math.round(workArea.width * 0.6);
+  if (width > maxWidth) { width = maxWidth; height = Math.round(width / aspect); }
+  return {
+    x: workArea.x + workArea.width - width,
+    y: workArea.y + Math.round((workArea.height - height) / 2),
+    width,
+    height
+  };
+}
+
+async function moveWindowTo(target) {
+  if (!mainWindow) return { ok: false, error: 'no window' };
+  const destination = (target === 'panel' || target === 'main')
+    ? target : (currentLocation === 'panel' ? 'main' : 'panel');
+  let bounds;
+  if (destination === 'main') bounds = computeMainStripBounds();
+  else if (!WINDOWED) {
+    const display = pickTargetDisplay();
+    bounds = display ? { ...display.bounds } : panelBounds;
+  } else bounds = panelBounds;
+  if (!bounds) return { ok: false, error: 'no target bounds' };
+
+  const zoom = destination === 'main' ? MAIN_ZOOM : 1;
+  try {
+    if (!mainWindow.isResizable()) mainWindow.setResizable(true);
+    if (boundsReassertTimer) clearTimeout(boundsReassertTimer);
+    mainWindow.setBounds(bounds);
+    try { mainWindow.webContents.setZoomFactor(zoom); } catch {}
+    boundsReassertTimer = setTimeout(() => {
+      try { mainWindow.setBounds(bounds); } catch {}
+      try { mainWindow.webContents.setZoomFactor(zoom); } catch {}
+      if (!WINDOWED) { try { mainWindow.setResizable(false); } catch {} }
+      boundsReassertTimer = null;
+    }, 60);
+    currentLocation = destination;
+    return { ok: true, location: destination, zoom };
+  } catch (error) { return { ok: false, error: error.message }; }
+}
+
+ipcMain.handle('move-window', async (_e, target) => moveWindowTo(target));
+ipcMain.handle('window-location', async () => ({ ok: true, location: currentLocation }));
+ipcMain.handle('window-minimize', async () => {
+  if (!mainWindow) return { ok: false, error: 'no window' };
+  mainWindow.minimize();
+  return { ok: true };
+});
+ipcMain.handle('window-set-always-on-top', async (_e, enabled) => {
+  if (!mainWindow) return { ok: false, error: 'no window' };
+  mainWindow.setAlwaysOnTop(!!enabled);
+  return { ok: true, alwaysOnTop: mainWindow.isAlwaysOnTop() };
+});
+ipcMain.handle('window-always-on-top', async () => ({
+  ok: !!mainWindow,
+  alwaysOnTop: !!mainWindow?.isAlwaysOnTop()
+}));
+
+// ── read a source: file path (text/image) or raw pasted text ──
+const IMG_MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.bmp': 'image/bmp' };
+ipcMain.handle('read-source', async (_e, raw) => {
+  let s = String(raw ?? '').trim();
+  // strip surrounding quotes that Windows "Copy as path" adds
+  if (s.length >= 2 && ((s[0] === '"' && s.endsWith('"')) || (s[0] === "'" && s.endsWith("'")))) s = s.slice(1, -1);
+  if (!s) return { ok: false, error: 'Nothing to read — paste a file path or some text.' };
+  let stat = null; try { stat = await fs.stat(s); } catch {}
+  if (stat && stat.isFile()) {
+    const ext = path.extname(s).toLowerCase();
+    if (IMG_MIME[ext]) {
+      const buf = await fs.readFile(s);
+      return { ok: true, kind: 'image', name: path.basename(s), mime: IMG_MIME[ext],
+               dataUrl: `data:${IMG_MIME[ext]};base64,${buf.toString('base64')}`, bytes: buf.length };
+    }
+    try {
+      let text = await fs.readFile(s, 'utf8');
+      const truncated = text.length > MAX_TEXT;
+      if (truncated) text = text.slice(0, MAX_TEXT);
+      return { ok: true, kind: 'text', name: path.basename(s), text, truncated };
+    } catch (e) { return { ok: false, error: `Could not read ${path.basename(s)} as text: ${e.message}` }; }
+  }
+  // not a file → treat as raw text
+  let text = s; const truncated = text.length > MAX_TEXT; if (truncated) text = text.slice(0, MAX_TEXT);
+  return { ok: true, kind: 'text', name: '(pasted text)', text, truncated };
+});
+
+// ── LLM chat (messages[] passthrough, supports vision content parts) ──
+ipcMain.handle('llm-chat', async (_e, opts) => {
+  const { baseURL, apiKey, model, temperature, messages } = opts || {};
+  try {
+    const url = `${(baseURL || 'http://localhost:1234/v1').replace(/\/+$/, '')}/chat/completions`;
+    const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey || 'lm-studio'}` };
+    if (/openrouter\.ai/i.test(url)) { headers['HTTP-Referer'] = 'https://sparklesnap.dev'; headers['X-Title'] = 'SparkleSnap Gengo Duet'; }
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ model: model || 'local-model', messages, temperature: typeof temperature === 'number' ? temperature : 0.7,
+        frequency_penalty: 0.6, presence_penalty: 0.4, stream: false })
+    });
+    if (!res.ok) return { ok: false, error: `LM Studio HTTP ${res.status}: ${(await res.text()).slice(0, 240)}` };
+    const data = await res.json();
+    return { ok: true, text: data?.choices?.[0]?.message?.content ?? '' };
+  } catch (e) {
+    return { ok: false, error: `${e.message} — is LM Studio's server running (Developer ▸ Start Server)?` };
+  }
+});
+
+ipcMain.handle('llm-models', async (_e, opts) => {
+  const { baseURL, apiKey } = opts || {};
+  try {
+    const url = `${(baseURL || 'http://localhost:1234/v1').replace(/\/+$/, '')}/models`;
+    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${apiKey || 'lm-studio'}` } });
+    if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
+    const data = await res.json();
+    return { ok: true, models: (data?.data || []).map(m => m.id) };
+  } catch (e) { return { ok: false, error: e.message }; }
+});
+
+// Load a chosen local model through LM Studio's optional JIT loading path.
+// A one-token request is enough to warm a downloaded model without generating a lesson.
+ipcMain.handle('llm-load', async (_e, opts) => {
+  const { baseURL, apiKey, model } = opts || {};
+  const base = (baseURL || 'http://localhost:1234/v1').replace(/\/+$/, '');
+  const origin = base.replace(/\/v1$/, '');
+  const wanted = String(model || '').trim();
+  const auth = { Authorization: `Bearer ${apiKey || 'lm-studio'}` };
+  if (!wanted) return { ok: false, error: 'no model id' };
+
+  let downloaded = [];
+  try {
+    const response = await fetch(`${origin}/api/v0/models`, { headers: auth });
+    if (response.ok) downloaded = (await response.json())?.data || [];
+  } catch {}
+
+  let target = wanted;
+  if (downloaded.length) {
+    const needle = wanted.toLowerCase();
+    const tail = needle.split('/').pop();
+    const match = downloaded.find(item => item.id === wanted)
+      || downloaded.find(item => String(item.id).toLowerCase().includes(needle))
+      || downloaded.find(item => String(item.id).toLowerCase().includes(tail));
+    if (!match) return { ok: false, status: 'missing', error: `Model "${wanted}" is not downloaded in LM Studio.` };
+    target = match.id;
+    if (match.state === 'loaded') return { ok: true, status: 'already', model: target };
+  }
+
+  try {
+    const response = await fetch(`${base}/chat/completions`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', ...auth },
+      body: JSON.stringify({ model: target, messages: [{ role: 'user', content: 'ping' }], max_tokens: 1, temperature: 0, stream: false })
+    });
+    if (!response.ok) return { ok: false, error: `LM Studio HTTP ${response.status}: ${(await response.text()).slice(0, 240)}` };
+    return { ok: true, status: 'loaded', model: target };
+  } catch (error) { return { ok: false, error: error.message }; }
+});
+
+// ── Compatible local TTS add-on: synthesize a line → WAV (base64) ──
+const trimU = u => (u || 'http://localhost:3113').replace(/\/+$/, '');
+ipcMain.handle('tts-generate', async (_e, opts) => {
+  const { baseURL, text, voice_design, language, cfg_value, inference_timesteps, seed } = opts || {};
+  try {
+    const res = await fetch(`${trimU(baseURL)}/api/generate`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text, voice_design: voice_design || '', language: language || 'English', mode: 'voice-design',
+        cfg_value: cfg_value ?? 2.0, inference_timesteps: inference_timesteps ?? 10,
+        seed: seed ?? -1, max_len: 4096, denoise: false, consent_ack: true
+      })
+    });
+    if (!res.ok) return { ok: false, error: `Voice server HTTP ${res.status}: ${(await res.text()).slice(0, 200)}` };
+    const buf = Buffer.from(await res.arrayBuffer());
+    return { ok: true, base64: buf.toString('base64'), mime: 'audio/wav', sampleRate: res.headers.get('X-Sample-Rate') || '' };
+  } catch (e) { return { ok: false, error: `${e.message} — is a compatible voice server running at ${trimU(baseURL)}?` }; }
+});
+
+// ── Local TTS VRAM telemetry / unload (overload protection) ──
+ipcMain.handle('vram-telemetry', async (_e, baseURL) => {
+  try {
+    const res = await fetch(`${trimU(baseURL)}/api/vram`);
+    if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
+    return { ok: true, ...(await res.json()) };
+  } catch (e) { return { ok: false, error: e.message }; }
+});
+// ── open a credit link in the external browser ──
+ipcMain.handle('open-url', async (_e, url) => {
+  if (!/^https?:\/\//.test(url)) return { ok: false, error: 'invalid URL' };
+  try { await shell.openExternal(url); return { ok: true }; }
+  catch (e) { return { ok: false, error: e.message }; }
+});
+
+app.setAppUserModelId(APP_USER_MODEL_ID);
+
+app.whenReady().then(() => {
+  logDisplays();
+  createWindow();
+  if (process.env.FOUNDRY_AUTOTEST === '1') {
+    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    mainWindow.webContents.once('did-finish-load', async () => {
+      await wait(1500);
+      const output = { panelBounds, atStart: mainWindow.getBounds() };
+      output.moveMain = await moveWindowTo('main');
+      await wait(900);
+      output.onMain = mainWindow.getBounds();
+      output.movePanel = await moveWindowTo('panel');
+      await wait(900);
+      output.backOnPanel = mainWindow.getBounds();
+      output.ok = JSON.stringify(output.backOnPanel) === JSON.stringify(output.atStart);
+      try { fsSync.writeFileSync(path.join(__dirname, 'autotest-bounds.json'), JSON.stringify(output, null, 2)); } catch {}
+      app.quit();
+    });
+  }
+  globalShortcut.register('Escape', () => app.quit());
+  app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
+});
+app.on('will-quit', () => globalShortcut.unregisterAll());
+app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });

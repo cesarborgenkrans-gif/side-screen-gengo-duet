@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gengo Duet - Tsuki &amp; Selene</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">日本語 DUET <span>// tsuki x selene · gengo lesson</span></div>
+      <div class="right">
+        <div id="themebar" class="themebar" aria-label="Color theme">
+          <button class="theme-swatch" data-theme="sakura" title="Sakura classroom"><span></span></button>
+          <button class="theme-swatch" data-theme="matcha" title="Matcha chalk"><span></span></button>
+          <button class="theme-swatch" data-theme="indigo" title="Indigo lantern"><span></span></button>
+          <button class="theme-swatch" data-theme="sunrise" title="Sunrise arcade"><span></span></button>
+          <button class="theme-swatch" data-theme="ink" title="Ink paper"><span></span></button>
+        </div>
+        <button id="btn-minimize" class="ghost window-control" data-i18n-title="minimize_title" title="Minimize Gengo Duet">— <span data-i18n="minimize">Minimize</span></button>
+        <select id="lang-select" class="lang-select" title="Explanation and voice language"></select>
+        <span id="vram" class="vram off" title="">VRAM -</span>
+        <span id="conn" class="conn checking" title="">● checking...</span>
+        <button id="screen-toggle" class="ghost window-control" data-i18n-title="screen_toggle_title" title="Move to main screen">▣ <span id="screen-toggle-label">main screen</span></button>
+        <button id="gear" class="ghost" title="LLM and voice settings">⚙ <span data-i18n="settings">settings</span></button>
+      </div>
+    </header>
+
+    <div id="filebanner" class="filebanner" hidden></div>
+
+    <section id="settings" class="settings" hidden>
+      <label><span data-i18n="provider">LLM provider</span>
+        <select id="cfg-provider">
+          <option value="lmstudio">LM Studio (local)</option>
+          <option value="ollama">Ollama (local)</option>
+          <option value="openrouter">OpenRouter (cloud)</option>
+          <option value="custom">Custom</option>
+        </select>
+      </label>
+      <label><span data-i18n="lmurl">LLM Base URL</span><input id="cfg-url" type="text" placeholder="http://localhost:1234/v1"></label>
+      <label><span data-i18n="model">Model</span><input id="cfg-model" type="text" placeholder="loaded local model"></label>
+      <label><span data-i18n="temp">Temperature</span><input id="cfg-temp" type="number" min="0" max="2" step="0.1" value="0.55"></label>
+      <label><span data-i18n="apikey">API Key</span><input id="cfg-key" type="text" placeholder="lm-studio"></label>
+      <label><span data-i18n="voiceurl">Voice server URL</span><input id="cfg-voice-url" type="text" placeholder="http://localhost:3113"></label>
+      <label class="chk"><input id="cfg-voice-on" type="checkbox"> <span data-i18n="voiceon">Voice output</span></label>
+      <p class="voice-credit"><span data-i18n="voice_credit">Optional local TTS add-on:</span> <a class="credit-link" href="https://github.com/cesarborgenkrans-gif/VoiceGen-Oui-ROCm-VoxCPM2" data-url="https://github.com/cesarborgenkrans-gif/VoiceGen-Oui-ROCm-VoxCPM2" target="_blank" rel="noreferrer">cesarborgenkrans-gif/VoiceGen-Oui-ROCm-VoxCPM2</a>.</p>
+      <label class="chk"><input id="cfg-always-on-top" type="checkbox"> <span data-i18n="always_on_top">Keep window on top</span></label>
+      <p id="privacy-note" class="privacy-note" aria-live="polite"></p>
+      <div class="row-actions">
+        <button id="btn-loadmodel" class="ghost" data-i18n-title="loadmodel_title" title="Load model in LM Studio">⇣ <span data-i18n="loadmodel">Load model</span></button>
+        <button id="cfg-save" class="primary" data-i18n="save">Save &amp; test</button>
+        <span id="cfg-status" class="muted"></span>
+      </div>
+    </section>
+
+    <section class="stage">
+      <div class="mascot tsuki" id="tsuki-stage">
+        <div class="bubble tsuki-bubble" id="tsuki-bubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="sprite" id="tsuki-sprite"></div>
+        <div class="mascot-name tsuki-name">TSUKI-SENSEI</div>
+      </div>
+      <div class="lesson-mark">言</div>
+      <div class="mascot selene" id="selene-stage">
+        <div class="bubble selene-bubble" id="selene-bubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="sprite" id="selene-sprite"></div>
+        <div class="mascot-name selene-name">SELENE-SENSEI</div>
+      </div>
+    </section>
+
+    <section class="logwrap">
+      <div class="log-head">
+        <span>&gt; GENGO_NOTEBOOK.md</span>
+        <button id="btn-copy-all" class="ghost log-copy" type="button" data-i18n="copy_all">Copy lesson</button>
+        <span class="log-tag" id="log-tag"></span>
+      </div>
+      <div class="log" id="log"></div>
+    </section>
+
+    <section class="console">
+      <label class="src-label" data-i18n="srclabel">FOCUS - paste a phrase, grammar point, kanji, question, image, or notes</label>
+      <textarea id="src-input" class="src-input" rows="2" data-i18n-ph="srcph" placeholder='e.g.  食べたい, は vs が, a lesson file path, or "I want to order coffee politely"'></textarea>
+      <div class="src-row">
+        <button id="btn-load" class="ghost">📎 <span data-i18n="load">Load focus</span></button>
+        <span id="src-chip" class="src-chip"></span>
+      </div>
+
+      <div class="modes" id="modes">
+        <button class="mode" data-mode="phrase">かな <span data-i18n="m_phrase">Phrase Lab</span></button>
+        <button class="mode" data-mode="grammar">文法 <span data-i18n="m_grammar">Grammar Lens</span></button>
+        <button class="mode" data-mode="kanji">漢字 <span data-i18n="m_kanji">Kanji Story</span></button>
+        <button class="mode" data-mode="recall">記憶 <span data-i18n="m_recall">Recall Drill</span></button>
+      </div>
+
+      <div class="run-row">
+        <label class="select-label"><span data-i18n="level">path</span>
+          <select id="lesson-level">
+            <option value="starter">Starter</option>
+            <option value="n5">JLPT N5</option>
+            <option value="travel">Travel</option>
+            <option value="daily">Daily life</option>
+            <option value="creative">Creative reading</option>
+          </select>
+        </label>
+        <label class="turns-label"><span data-i18n="turns">turns</span>
+          <input id="turns" type="number" min="2" max="12" step="2" value="6">
+        </label>
+        <button id="btn-run" class="primary big">▶ <span data-i18n="run">Teach the lesson</span></button>
+        <button id="btn-stop" class="ghost" hidden>■ <span data-i18n="stop">Stop</span></button>
+      </div>
+
+      <div class="status-bar">
+        <span id="status" class="status"></span>
+      </div>
+    </section>
+
+    <footer class="credits">
+      <span>© 2026 Cesar Borgenkrans · SparkleSnap</span>
+      <span class="sep">·</span>
+      <a class="credit-link" data-url="https://sparklesnap.dev">sparklesnap.dev</a>
+      <span class="sep">·</span>
+      <a class="credit-link" data-url="https://github.com/cesarborgenkrans-gif">github.com/cesarborgenkrans-gif</a>
+    </footer>
+  </div>
+  <script src="locales/gengo-duet-locales.js"></script>
+  <script src="i18n.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

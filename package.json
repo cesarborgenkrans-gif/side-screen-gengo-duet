@@ -1,0 +1,56 @@
+{
+  "name": "gengo-duet-electron",
+  "version": "1.0.0",
+  "description": "Gengo Duet - two-mascot Japanese teaching dashboard for compact Electron panels",
+  "author": "Cesar Borgenkrans / SparkleSnap",
+  "license": "MIT",
+  "homepage": "https://github.com/cesarborgenkrans-gif/side-screen-gengo-duet",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cesarborgenkrans-gif/side-screen-gengo-duet.git"
+  },
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --windowed",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check": "node --check main.js && node --check preload.js && node --check renderer.js && node --check i18n.js && npm run check:i18n",
+    "dist:win": "electron-builder --win portable --x64"
+  },
+  "build": {
+    "appId": "dev.sparklesnap.gengo-duet",
+    "productName": "Gengo Duet",
+    "asar": true,
+    "directories": {
+      "output": "release-dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "i18n.js",
+      "index.html",
+      "style.css",
+      "locales/**/*",
+      "assets/cursor.svg",
+      "assets/cursor-active.svg",
+      "assets/icon.ico",
+      "souls/**/*",
+      "package.json",
+      "LICENSE",
+      "ASSET_LICENSE.md",
+      "README.md"
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "portable"
+      ]
+    },
+    "artifactName": "Gengo-Duet-${version}-Windows-x64.${ext}"
+  },
+  "devDependencies": {
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3"
+  }
+}
