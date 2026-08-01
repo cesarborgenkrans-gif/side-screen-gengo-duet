@@ -20,10 +20,7 @@
     { code: 'fr', native: 'Français', llm: 'French explanations with Japanese examples, kana, and natural translations', voxcpm: 'French' },
     { code: 'de', native: 'Deutsch', llm: 'German explanations with Japanese examples, kana, and natural translations', voxcpm: 'German' },
     { code: 'pl', native: 'Polski', llm: 'Polish explanations with Japanese examples, kana, and natural translations', voxcpm: 'Polish' },
-    { code: 'tr', native: 'Türkçe', llm: 'Turkish explanations with Japanese examples, kana, and natural translations', voxcpm: 'Turkish' },
     { code: 'ru', native: 'Русский', llm: 'Russian explanations with Japanese examples, kana, and natural translations', voxcpm: 'Russian' },
-    { code: 'uk', native: 'Українська', llm: 'Ukrainian explanations with Japanese examples, kana, and natural translations', voxcpm: 'Ukrainian' },
-    { code: 'el', native: 'Ελληνικά', llm: 'Greek explanations with Japanese examples, kana, and natural translations', voxcpm: 'Greek' },
     { code: 'it', native: 'Italiano', llm: 'Italian explanations with Japanese examples, kana, and natural translations', voxcpm: 'Italian' },
     { code: 'ms', native: 'Bahasa Melayu', llm: 'Malay explanations with Japanese examples, kana, and natural translations', voxcpm: 'Malay' }
   ];

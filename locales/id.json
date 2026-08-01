@@ -44,7 +44,7 @@
     "st_done": "Pelajaran selesai — {n} giliran dalam mode {mode}.",
     "st_stopped": "Dihentikan setelah {n} giliran.",
     "st_stopping": "Menghentikan…",
-    "st_modeset": "Mode: {mode}.",
+    "st_modeset": "Pengaturan mode: {mode}.",
     "st_voiceerr": "Suara tidak tersedia, lanjut dengan teks saja: {e}",
     "st_llmerr": "Kesalahan LLM: {e}",
     "conn_checking": "memeriksa…",

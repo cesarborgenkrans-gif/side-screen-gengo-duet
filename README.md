@@ -47,7 +47,7 @@ For a normal resizable development window, run `npm run dev`.
 - Offers Phrase Lab, Grammar Lens, Kanji Story, and Recall Drill lesson modes.
 - Includes Starter, JLPT N5, Travel, Daily Life, and Creative Reading paths.
 - Keeps both teachers on one transcript so each turn can build on the last.
-- Supports 21 interface and explanation languages.
+- Supports 18 interface and explanation languages.
 - Can speak each turn through an optional local
   [VoiceGen Oui](https://github.com/cesarborgenkrans-gif/VoiceGen-Oui-ROCm-VoxCPM2)
   server.
