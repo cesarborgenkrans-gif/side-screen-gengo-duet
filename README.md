@@ -9,19 +9,20 @@
 > [!IMPORTANT]
 > ### 🌸 Japanese Gengo Duet has graduated into [Duo Voice Harness](https://github.com/cesarborgenkrans-gif/duo-voice-harness)
 > 
-> **The two-teacher Japanese language learning loop from Gengo Duet is now fully integrated into [Duo Voice Harness](https://github.com/cesarborgenkrans-gif/duo-voice-harness).**
+> **The beloved two-teacher Japanese learning method from Gengo Duet is now fully integrated into [Duo Voice Harness](https://github.com/cesarborgenkrans-gif/duo-voice-harness) with real-time streaming Japanese voice!**
 >
-> The experimental lesson prompts from this dashboard have been refined into native, zero-friction pedagogy buttons:
-> * 🏮 **Kanji Story:** Vivi teaches the radical story and memory anchor; Momotamu models readings and speakable sentences.
-> * 🍵 **Phrase Lab:** Momotamu demonstrates pronunciation and politeness levels; Vivi details nuance and cultural caveats.
-> * ⚡ **Micro Recall:** Interactive rapid-fire Japanese recall drills with spaced answers.
+> The experimental lesson prompts from this classroom have been refined into native, zero-friction pedagogy buttons:
+> * 🏮 **Kanji Story:** Discover the visual radical story, stroke logic, and vivid memory anchors.
+> * 🍵 **Phrase Lab:** Model authentic pronunciation, natural cadence, and nuanced politeness levels.
+> * ⚡ **Micro Recall:** Interactive rapid-fire spaced recall drills that get you speaking out loud immediately.
 >
-> **Upgrades in Duo Voice Harness:**
-> * 🎧 **Production-Ready Local Voice:** No more experimental ROCm driver crashes; robust multi-packet continuous resampling and audio buffering.
-> * 🎙️ **Japanese Speech Clones:** High-fidelity native Japanese reference conditioning.
-> * 💬 **Listener Direction:** Toggle seamlessly between companions speaking with you or conversing between themselves.
+> **Key Pedagogy & Voice Upgrades:**
+> * 🎙️ **Native Japanese Speech Clones:** High-fidelity Japanese voice conditioning modeled for natural inflection.
+> * 🎧 **Production-Ready Local Engine:** Robust continuous audio buffering and multi-packet resampling for silky playback.
+> * 💬 **Dynamic Speaker Direction:** Seamlessly toggle between companions teaching you directly or conversing together while you shadow.
+> * 🛑 **Speak & Interrupt (Barge-In):** Practice speaking naturally with instant voice detection without waiting for turns to finish.
 >
-> 👉 **[Start learning with Duo Voice Harness →](https://github.com/cesarborgenkrans-gif/duo-voice-harness)**
+> 👉 **[Start learning Japanese with Duo Voice Harness →](https://github.com/cesarborgenkrans-gif/duo-voice-harness)**
 
 <p align="center">
   <img src="gengo-duet-interface.png" alt="Gengo Duet Japanese learning interface with Tsuki-sensei and Selene-sensei" width="900">
